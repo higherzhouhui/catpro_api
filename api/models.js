@@ -45,7 +45,7 @@ const User = db.sequelize.define(
     ]
   }
 )
-User.sync({ alter: true })
+// User.sync({ alter: true })
 
 
 /** 签到奖励列表  */
@@ -61,7 +61,7 @@ const CheckInReward = db.sequelize.define(
   }
 )
 
-CheckInReward.sync({ alter: true })
+// CheckInReward.sync({ alter: true })
 
 
 /** 任务列表  */
@@ -79,7 +79,7 @@ const TaskList = db.sequelize.define(
   }
 )
 
-TaskList.sync({ alter: true })
+// TaskList.sync({ alter: true })
 
 /** 全局配置  */
 const Config = db.sequelize.define(
@@ -98,7 +98,7 @@ const Config = db.sequelize.define(
     tableName: 'config'
   }
 )
-Config.sync({ force: true })
+// Config.sync({ force: true })
 
 /** 操作日志  */
 const Event = db.sequelize.define(
@@ -119,7 +119,7 @@ const Event = db.sequelize.define(
   }
 )
 
-Event.sync({ force: true })
+// Event.sync({ force: true })
 
 /** Manager */
 const Manager = db.sequelize.define(
@@ -134,7 +134,7 @@ const Manager = db.sequelize.define(
     tableName: 'manager'
   }
 )
-Manager.sync({ alter: true })
+// Manager.sync({ alter: true })
 
 /** UserTask */
 const UserTask = db.sequelize.define(
@@ -148,7 +148,7 @@ const UserTask = db.sequelize.define(
     tableName: 'UserTask'
   }
 )
-UserTask.sync({ alter: true })
+// UserTask.sync({ alter: true })
 
 module.exports = {
   User,
