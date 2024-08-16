@@ -35,7 +35,7 @@ const rateLimiter = (req, res, next) => {
     rateLimitCache.set(ip, 1);
   } else {
     const count = rateLimitCache.get(ip);
-    if (count >= 10) { // 允许的最大请求次数
+    if (count >= 20) { // 允许的最大请求次数
       return res.status(429).send('Too Many Requests');
     }
     rateLimitCache.set(ip, count + 1);
@@ -56,6 +56,7 @@ const white_list = [
   '/api/system/scan_block',
   '/api/admin/migrateData',
   '/api/dogAdmin/login',
+  '/api//system/resetTicket',
   /^\/api\/nft\/\d+$/,
   '/api/system/getFfpAndEthPrice',
   '/api/system/distributeRewards',
@@ -101,7 +102,7 @@ function system_logger() {
   return logger
 }
 
-const port = process.env.SERVER_PORT || 8085
+const port = process.env.SERVER_PORT || 5174
 app.listen(port, function () {
   system_logger().info('1.Api server is listen port:' + port)
 })

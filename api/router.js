@@ -1,13 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const user = require('./user.js')
-const chain = require('./chain.js')
 const manage = require('./manage.js')
 const game = require('./game.js')
+const checkInReward = require('./reward.js')
+const task = require('./task.js')
 
-// const admin = require('./admin.js')
-// admin.init_systemConfig()
+const admin = require('./admin.js')
+// admin.init_rewardList()
+// admin.init_taskList()
 // admin.init_manager()
+// admin.init_systemConfig()
 // 用户路由
 router.post('/user/login', user.login)
 router.post('/user/update', user.updateInfo)
@@ -15,19 +18,24 @@ router.post('/user/check', user.userCheck)
 router.post('/user/bindWallet', user.bindWallet)
 router.get('/user/list', user.getUserList)
 router.get('/user/subList', user.getSubUserList)
+router.get('/user/subTotal', user.getSubUserTotal)
 router.get('/user/userInfo', user.getUserInfo)
 router.get('/user/createUser', user.createUserInfo)
 router.get('/user/cancelCreateUser', user.cancelCreateUserInfo)
+router.get('/user/startFarming', user.startFarming)
+router.get('/user/getRewardFarming', user.getRewardFarming)
 
 router.get('/game/begin', game.begin)
 router.post('/game/end', game.end)
 
-
-router.get('/system/getFfpAndEthPrice', chain.getFfpAndEthPrice)
-router.get('/system/distributeRewards', chain.distributeRewards)
-router.get('/system/distributePts', chain.distributePts)
+// 签到奖励列表
+router.get('/checkInReward/list', checkInReward.list)
+// 获取任务列表
+router.get('/task/list', task.list)
+router.post('/task/handle', task.handle)
 
 router.get('/system/getConfig', manage.getConfigInfo)
+router.get('/system/resetTicket', user.resetTicketInfo)
 
 // 管理后台接口
 router.post('/dogAdmin/login', manage.login)

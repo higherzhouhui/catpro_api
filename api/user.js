@@ -1,8 +1,9 @@
 var log4js = require('log4js')
 const { errorResp, successResp } = require('./common')
 const Model = require('./models')
-const utils = require('./utils')
 const dataBase = require('./database')
+const moment = require('moment/moment')
+const { isLastDay } = require('./utils')
 
 /**
  * post /api/user/login
@@ -18,7 +19,7 @@ const dataBase = require('./database')
 async function login(req, resp) {
   user_logger().info('发起登录', req.body)
   try {
-    const result = await dataBase.sequelize.transaction(async (t) => {
+    await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
       if (!(data.hash && data.id && data.username && data.authDate)) {
         await tx.rollback()
@@ -34,20 +35,23 @@ async function login(req, resp) {
       if (!user) {
         const info = await Model.Config.findOne()
         data.user_id = data.id
-        // 要根据使用年限递增
-        const { year, percent } = utils.accordingIdGetTime(data.user_id)
-        data.year = year
-        data.percent = percent
-        // 一年以内
-        data.account_age_score = info.not_one_year + info.one_year_add * year
-        data.score = data.account_age_score
+        // 初始化积分
+        data.score = info.invite_normalAccount_score
+        // 如果是会员则额外增加
         if (data.isPremium) {
-          data.telegram_premium = info.huiYuan_add
-          data.score += data.telegram_premium
+          data.score += info.invite_premiumAccount_score
         }
         try {
+          // 给上级用户加积分
           if (data.startParam) {
-            const inviteId = atob(data.startParam) * 1
+            let isShareGame = data.startParam.includes('SHAREGAME')
+            let inviteId;
+            if (isShareGame) {
+              const param = data.startParam.replace('SHAREGAME', '')
+              inviteId = parseInt(atob(param))
+            } else {
+              inviteId = parseInt(atob(data.startParam))
+            }
             if (!isNaN(inviteId)) {
               data.startParam = inviteId
               const parentUser = await Model.User.findOne({
@@ -55,29 +59,48 @@ async function login(req, resp) {
                   user_id: inviteId
                 }
               })
-              const pList = await Model.Event.findAndCountAll({
-                where: {
-                  to_user: inviteId,
-                  type: 'register'
-                }
-              })
-              let increment_score = info.invite_add
-              // 每邀请三个奖励暴击
-
-              if (pList.count && pList.count % 3 == 0) {
-                increment_score = Math.floor(info.invite_add * (info.every_three_ratio + Math.random()))
+              let increment_score = info.invite_normalAccount_score
+              let increment_ticket = info.invite_normalAccount_ticket
+              // 如果是会员的话积分更多
+              if (data.isPremium) {
+                increment_score = info.invite_premiumAccount_score
+                increment_ticket = info.invite_premiumAccount_ticket
               }
+            
               if (parentUser) {
-                await parentUser.increment({ score: increment_score, invite_friends_score: increment_score })
+                if (isShareGame) {
+                  const event_data = {
+                    type: 'share_playGame',
+                    from_user: data.id,
+                    to_user: inviteId,
+                    score: 50,
+                    ticket: 0,
+                    from_username: data.username,
+                    to_username: parentUser.username,
+                    desc: `${parentUser.username} invite ${data.username} play game!`
+                  }
+                  await Model.Event.create(event_data)
+                }
                 const event_data = {
                   type: 'register',
                   from_user: data.id,
                   to_user: inviteId,
                   score: increment_score,
+                  ticket: increment_ticket,
                   from_username: data.username,
                   to_username: parentUser.username,
+                  desc: `${parentUser.username} invite ${data.username} join us!`
                 }
                 await Model.Event.create(event_data)
+                // 顺序不能变
+                if (isShareGame) {
+                  increment_score += 50
+                }
+                await parentUser.increment({
+                  score: increment_score,
+                  invite_friends_score: increment_score,
+                  ticket: increment_ticket
+                })
               }
             }
           }
@@ -87,7 +110,6 @@ async function login(req, resp) {
         if (data.id) {
           delete data.id
         }
-
         await Model.User.create(data)
         return successResp(resp, { ...data, is_New: true }, 'success')
       } else {
@@ -139,41 +161,110 @@ async function updateInfo(req, resp) {
  */
 async function userCheck(req, resp) {
   user_logger().info('用户信息', req.id)
-  const tx = await dataBase.sequelize.transaction()
   try {
-    const user = await Model.User.findOne({
-      where: {
-        user_id: req.id
+    await dataBase.sequelize.transaction(async (t) => {
+      const user = await Model.User.findOne({
+        where: {
+          user_id: req.id
+        }
+      })
+      if (!user) {
+        return errorResp(resp, `未找到该用户`)
       }
-    })
-    if (!user) {
-      return errorResp(resp, `未找到该用户`)
+      let day = 1
+      let today = moment().utc().format('MM-DD')
+      const checkInList = await Model.Event.findAll({
+        where: {
+          type: 'checkIn',
+          from_user: req.id,
+        },
+        order: [['createdAt', 'desc']],
+        attributes: ['createdAt']
+      })
+      const newCheckInList = checkInList.filter(item => {
+        return moment(item.dataValues.createdAt).utc().format('MM-DD') != today
+      })
+
+      newCheckInList.map((item, index) => {
+        if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
+          day = index + 2
+        }
+      })
+
+      const allRewardList = await Model.CheckInReward.findAll({
+        order: [['day', 'asc']],
+        attributes: ['day', 'score', 'ticket']
+      })
+      const rewardList = allRewardList.filter((item) => {
+        return item.dataValues.day == day
+      })
+      const reward = rewardList[0]
+      let check_score = user.check_score
+      let score = user.score
+      let ticket = user.ticket
+      if (user.check_date != today) {
+        check_score += reward.score
+        score += reward.score
+        ticket += reward.ticket
+        await Model.User.update({
+          check_date: today,
+          check_score: check_score,
+          score: score,
+          ticket: ticket
+        }, {
+          where: {
+            user_id: req.id
+          },
+        })
+
+        let event_data = {
+          type: 'checkIn',
+          from_user: req.id,
+          from_username: user.username,
+          desc: `${user.username} is checked`,
+          score: reward.score,
+          ticket: reward.ticket,
+        }
+        await Model.Event.create(event_data)
+        if (user.startParam) {
+          const parentUser = await Model.User.findOne({
+            where: {
+              user_id: user.startParam
+            }
+          })
+          if (parentUser) {
+            const config = await Model.Config.findOne()
+            const score_ratio = Math.floor(reward.score * config.invite_friends_ratio / 100)
+            await parentUser.increment({
+              score: score_ratio,
+              invite_friends_score: score_ratio
+            })
+            event_data = {
+              type: 'checkIn_parent',
+              from_user: req.id,
+              from_username: user.username,
+              to_user: parentUser.user_id,
+              to_username: parentUser.username,
+              score: score_ratio,
+              ticket: 0,
+              desc: `${parentUser.username} get checkIn reward ${score_ratio} $tomato from ${user.username}`
+            }
+            await Model.Event.create(event_data)
+          }
+        }
+      }
+      return successResp(resp, {
+        check_date: today,
+        check_score: check_score,
+        score: score,
+        reward_ticket: reward.ticket,
+        ticket: ticket,
+        day: day,
+        reward_score: reward.score
+      }, 'success')
     }
-    await Model.User.update({
-      check_date: Date.now(),
-      check_score: user.check_score + 3600,
-      score: user.score + 3600
-    }, {
-      where: {
-        user_id: req.id
-      },
-      transaction: tx
-    })
-  
-    const event_data = {
-      type: 'sign',
-      from_user: req.id,
-      from_username: user.username,
-      to_user: req.id,
-      to_username: user.username,
-      desc: `${user.username} is check in`,
-      score: 3600
-    }
-    await Model.Event.create(event_data, {transaction: tx})
-    await tx.commit()
-    return successResp(resp, {check_date: new Date(), check_score: user.check_score + 3600, score: user.score + 3600}, 'success')
+    )
   } catch (error) {
-    await tx.rollback()
     user_logger().error('用户签到失败', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
@@ -196,31 +287,21 @@ async function bindWallet(req, resp) {
         user_id: req.id
       }
     })
-
+    if (!user) {
+      return errorResp(resp, 400, `can't find this user`)
+    }
     await Model.User.update({
       wallet: req.body.wallet,
-      bind_wallet_score: 9000,
-      score: user.score + (user.wallet ? 0 : 9000)
+      wallet_nickName: req.body.wallet_nickName
     }, {
       where: {
         user_id: req.id
       },
       transaction: tx
     })
-    if (!user.wallet) {
-      const event_data = {
-        type: 'wallet',
-        from_user: req.id,
-        from_username: user.username,
-        to_user: req.id,
-        to_username: user.username,
-        desc: `${user.username} is bind wallet`,
-        score: 9000
-      }
-      await Model.Event.create(event_data, {transaction: tx})
-    }
+   
     await tx.commit()
-    return successResp(resp, {wallet: req.body.wallet, bind_wallet_score: 9000, score: user.score + (user.wallet ? 0 : 9000)}, 'success')
+    return successResp(resp, { wallet: req.body.wallet, wallet_nickName: req.body.wallet_nickName }, 'success')
   } catch (error) {
     await tx.rollback()
     user_logger().error('用户绑定钱包失败', error)
@@ -270,6 +351,30 @@ async function getUserList(req, resp) {
   }
 }
 
+
+/**
+ * get /api/user/subTotal
+ * @summary 获取下级总会员
+ * @tags user
+ * @description 获取下级总会员
+ * @security - Authorization
+ */
+async function getSubUserTotal(req, resp) {
+  user_logger().info('获取下级总会员', req.id)
+  try {
+    const user = await Model.User.findAndCountAll({
+      where: {
+        startParam: req.id
+      }
+    })
+    return successResp(resp, { total: user.count }, 'success')
+  } catch (error) {
+    user_logger().error('获取下级总会员失败', error)
+    console.error(`${error}`)
+    return errorResp(resp, `${error}`)
+  }
+}
+
 /**
  * get /api/user/subList
  * @summary 获取下级用户列表
@@ -284,11 +389,10 @@ async function getSubUserList(req, resp) {
     const page = req.query.page
     const list = await Model.Event.findAndCountAll({
       order: [['createdAt', 'desc']],
-      attributes: ['from_username', 'score'],
+      attributes: ['from_username', 'score', 'createdAt', 'type'],
       offset: (page - 1) * 20,
       limit: 20 * 1,
       where: {
-        type: 'register',
         to_user: req.id,
       }
     })
@@ -314,24 +418,9 @@ async function getUserInfo(req, resp) {
       where: {
         user_id: req.id
       },
-      attributes: ['score', 'telegram_premium', 'invite_friends_score', 'game_score', 'game_max_score'],
+      attributes: ['score', 'telegram_premium', 'invite_friends_score', 'game_score'],
     })
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
-    const todayEnd = new Date(todayStart);
-    todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
-
-    const playGameEvent = await Model.Event.findAndCountAll({
-      where: {
-        createdAt: {
-          [dataBase.Op.gte]: todayStart,
-          [dataBase.Op.lt]: todayEnd,
-        },
-        from_user: req.id,
-        type: 'play_game'
-      },
-    })
-    return successResp(resp, { userInfo: { ...userInfo.dataValues, playGameTimes: 5 - playGameEvent.count} }, 'success')
+    return successResp(resp, { userInfo: { ...userInfo.dataValues } }, 'success')
   } catch (error) {
     user_logger().error('获取下级用户列表失败', error)
     console.error(`${error}`)
@@ -379,6 +468,163 @@ async function cancelCreateUserInfo(req, resp) {
     clearInterval(timer[key])
   })
   return successResp(resp, {}, '取消成功')
+}
+
+
+/**
+ * get /api/user/resetTicket
+ * @summary 重置每日次数
+ * @tags user
+ * @description 重置每日次数
+ * @security - Authorization
+ */
+
+async function resetTicketInfo(req, resp) {
+  try {
+    const result = await dataBase.sequelizeAuto.transaction(async (t) => {
+      await Model.User.update(
+        {
+          ticket: 5,
+        },
+        { where: true })
+    })
+    return successResp(resp, {}, '重置成功')
+  } catch (error) {
+    return errorResp(resp, 400, `${error}`)
+  }
+}
+
+/**
+ * get /api/user/startFarming
+ * @summary 开始种植
+ * @tags user
+ * @description 开始种植
+ * @security - Authorization
+ */
+
+async function startFarming(req, resp) {
+  try {
+    const id = req.id
+    await dataBase.sequelizeAuto.transaction(async (t) => {
+      const user = await Model.User.findOne({
+        where: {
+          user_id: id
+        }
+      })
+      // 如果当前时间还在结束时间范围内，不允许再次开始
+      if (user && user.dataValues.end_farm_time && new Date(user.dataValues.end_farm_time).getTime() > Date.now()) {
+        return successResp(resp, {}, 'farming还未结束')
+      }
+      const last_farming_time = new Date()
+      const end_farm_time = new Date(last_farming_time.getTime() + 3 * 60 * 60 * 1000)
+      await Model.User.update(
+        {
+          end_farm_time: end_farm_time,
+          last_farming_time: last_farming_time,
+        },
+        {
+          where: {
+            user_id: id
+          }
+        })
+      const event_data = {
+        type: 'start_farming',
+        from_user: req.id,
+        from_username: user.username,
+        to_user: 0,
+        to_username: 'system',
+        score: 0,
+        ticket: 0,
+        desc: `${user.username} start farming`
+      }
+      await Model.Event.create(event_data)
+      return successResp(resp, {
+        end_farm_time: end_farm_time,
+        last_farming_time: last_farming_time
+      }, '开始farming')
+    })
+  } catch (error) {
+    user_logger().error('开始种植失败', error)
+    return errorResp(resp, 400, `${error}`)
+  }
+}
+
+
+/**
+ * get /api/user/getRewardFarming
+ * @summary 收货果实
+ * @tags user
+ * @description 收货果实
+ * @security - Authorization
+ */
+
+async function getRewardFarming(req, resp) {
+  try {
+    const id = req.id
+    await dataBase.sequelizeAuto.transaction(async (t) => {
+      const user = await Model.User.findOne({
+        where: {
+          user_id: id
+        }
+      })
+      const now = new Date()
+      const last_farming_time = user.dataValues.last_farming_time || now
+      const end_farm_time = user.dataValues.end_farm_time
+      if (new Date(last_farming_time).getTime() > new Date(end_farm_time).getTime()) {
+        return successResp(resp, {}, '还没开始farming')
+      }
+      let score = 0.1 * Math.round(((Math.min(now.getTime(), new Date(end_farm_time).getTime()) - new Date(last_farming_time).getTime())) / 1000)
+      score = score.toFixed(1) * 1
+      await Model.User.update(
+        {
+          score: user.score + score,
+          farm_score: user.farm_score + score,
+          last_farming_time: now,
+        },
+        {
+          where: {
+            user_id: id
+          }
+        })
+        // 如果本次farming结束则执行给上级返
+        if (user.startParam && Date.now() > new Date(end_farm_time).getTime()) {
+          const parentUser = await Model.User.findOne({
+            where: {
+              user_id: user.startParam
+            }
+          })
+          if (parentUser) {
+            const config = await Model.Config.findOne()
+            const score_ratio = Math.floor(1080 * config.invite_friends_ratio / 100)
+            await parentUser.increment({
+              score: score_ratio,
+              invite_friends_farm_score: score_ratio
+            })
+            event_data = {
+              type: 'harvest_farming',
+              from_user: req.id,
+              from_username: user.username,
+              to_user: parentUser.user_id,
+              to_username: parentUser.username,
+              score: score_ratio,
+              ticket: 0,
+              desc: `${parentUser.username} get farming harvest ${score_ratio} $tomato from ${user.username}`
+            }
+            await Model.Event.create(event_data)
+          }
+        }
+
+      return successResp(resp, {
+        score: user.score + score,
+        farm_score: user.farm_score + score,
+        last_farming_time: now,
+        farm_reward_score: score
+      }, '开始farming')
+    })
+  } catch (error) {
+    user_logger().error('收货果实失败', error)
+    return errorResp(resp, 400, `${error}`)
+  }
 }
 
 
@@ -467,5 +713,9 @@ module.exports = {
   getSubUserList,
   getUserInfo,
   createUserInfo,
-  cancelCreateUserInfo
+  cancelCreateUserInfo,
+  resetTicketInfo,
+  startFarming,
+  getRewardFarming,
+  getSubUserTotal
 }

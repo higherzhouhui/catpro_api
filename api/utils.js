@@ -348,6 +348,17 @@ function accordingIdGetTime(id) {
   return {year, percent}
 }
 
+
+function isLastDay(timestamp, diff) {
+  const date = new Date()
+  date.setDate(date.getDate() - diff)
+  date.setHours(0,0,0,0)
+  const startTimeStamp = date.getTime()
+  const endTimeStamp = startTimeStamp + 24 * 60 * 60 * 1000; // 24小时的毫秒数
+  // 判断给定的时间戳是否在时间范围内
+  return timestamp >= startTimeStamp && timestamp < endTimeStamp;
+}
+
 /******************************Private method */
 
 module.exports = {
@@ -367,5 +378,6 @@ module.exports = {
   scaleDownByNumber,
   whereSqlLint,
   expToNftImg,
-  accordingIdGetTime
+  accordingIdGetTime,
+  isLastDay
 }
