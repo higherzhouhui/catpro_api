@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "pts*50",
+    "desc": "pts",
+    "props_id": 10002,
+    "weight": 1,
+    "amount": 50
+  },
+  {
+    "id": 2,
+    "name": "pts*100",
+    "desc": "",
+    "props_id": 10002,
+    "weight": 1,
+    "amount": 100
+  },
+  {
+    "id": 3,
+    "name": "🛡️*1",
+    "desc": "shield",
+    "props_id": 10001,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 4,
+    "name": "🍌*1",
+    "desc": "banana",
+    "props_id": 10018,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 5,
+    "name": "🍣*1",
+    "desc": "sushi",
+    "props_id": 10019,
+    "weight": 30,
+    "amount": 1
+  },
+  {
+    "id": 6,
+    "name": "🍠*1",
+    "desc": "sweet potato",
+    "props_id": 10020,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 7,
+    "name": "🥯*1",
+    "desc": "cacke",
+    "props_id": 10021,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 8,
+    "name": "🥛*1",
+    "desc": "milk",
+    "props_id": 10023,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 9,
+    "name": "🍄*1",
+    "desc": "mushroom",
+    "props_id": 10026,
+    "weight": 1,
+    "amount": 1
+  },
+  {
+    "id": 11000,
+    "name": "egg * 1",
+    "desc": "egg",
+    "props_id": 11000,
+    "weight": 10,
+    "amount": 1
+  }
+]

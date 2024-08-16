@@ -1,0 +1,91 @@
+
+FPLotter:0x9fe6cdEe50D93af8D056711534B6cD1952d0f89e
+
+ffpToken:"0xF851370f0De5DcA1a04eFD19c3365B27e2764A98",
+fpetNft:"0xb2153536828e1BaF24C1a21A778590Af682971A8",
+
+//hook
+fpetHook:"0x1eBb6F90Ad8082eAb5462Eef1517012197B63324",
+fpLottery: "0x1E7E639a097FD7d33bd1C34Ec64b565791e684cA",
+
+//apigateway
+fpapiGateway:"0xAb8ed62b7efbCc149D9cA18027C31cBd1d074ccc",
+
+//settle
+FfpSettlePool:"0x71A582796e50cb60413Bd709EEAC1722BcBCbCc0"
+-----------------------------
+apigateway合约
+
+1、空投
+方法：function claim_pet(address nft_addr, address wallet, bytes calldata signature) external 
+
+签名对像 Claim(address nft,address to)
+事件：event FPetClaim(address indexed addr,address indexed nft,uint time)
+-------------------------------
+FfpSettlePool 合约
+
+1、购买
+方法：function buy(uint256 nonce,  uint256 tokenAmount,uint256 uAmount, bytes calldata signature) external
+签名对像：BuyRequest(uint256 nonce,uint256 tokenAmount,uint256 uAmount)
+事件：event Buy(address indexed sender, address indexed to , uint256 amount)
+
+2、pts积分兑换
+方法：function exchange(uint256 nonce,  uint256 amount, bytes calldata signature) external
+签名对像：ExchangeRequest(uint256 nonce,uint256 amount)
+事件：event Exchange(address indexed sender, address indexed to , uint256 amount)
+
+3、获取道具购买的ffp token总余额
+方法：function tokenBalance() public view returns (uint256)
+
+L=m\cdot\left(1+\frac{a}{100}\right)^{\log_{c}\left(x\right)}+b
+
+需要平台签名的有：
+1.claim_pet
+2.update_pet_exp
+	update_pet_exp(uint256 pet_id, uint256 exp, address nft_addr,address wallet,bytes calldata signature)
+3.pts兑换ffp
+	exchange(uint256 nonce,  uint256 amount,address wallet, bytes calldata signature) 
+还有个喂养成本传给lucky和rebase合约
+
+
+////////////
+apigateway合约
+
+- 空投
+    
+    方法：function claim_pet(address nft_addr, address wallet, bytes calldata signature) external
+    
+    签名对像 Claim(address nft,address to)
+    事件：event FPetClaim(address indexed addr,address indexed nft,uint256 tokenId)
+    
+- 喂食物
+    
+    方法：function feed_pet(address nft_address, address wallet, uint256 pet_id, uint256 exp,uint256 nonce, bool inc, uint256 a, bytes calldata signature) external
+    签名对像 PetFeed(
+        address nft,
+        address to,
+        uint256 nonce,
+        uint256 petId,
+        uint256 exp,
+        bool inc,
+        uint256 a)
+    事件：event FPetClaim(address indexed addr,address indexed nft,uint256 tokenId)
+    
+
+2、FfpSettlePool 合约
+
+- 购买
+    
+    方法：function buy(uint256 nonce,  uint256 tokenAmount,uint256 uAmount, bytes calldata signature) external
+    签名对像：BuyRequest(uint256 nonce,uint256 tokenAmount,uint256 uAmount)
+    事件：event Buy(address indexed sender, address indexed to , uint256 amount)
+    
+- pts积分兑换
+    
+    方法：function exchange(uint256 nonce,  uint256 amount, address wallet, bytes calldata signature) external
+    签名对像：ExchangeRequest(uint256 nonce,uint256 amount,address to)
+    事件：event Exchange(address indexed sender, address indexed to , uint256 amount)
+    
+- 获取道具购买的ffp token总余额
+    
+    方法：function tokenBalance() public view returns (uint256)

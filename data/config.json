@@ -1,0 +1,20 @@
+{
+  "bonk_freeze_time": 900,
+  "commission_rate": 0.1,
+  "compensation_rate": 0.005,
+  "totalReward": 0,
+  "bunk": 1,
+  "bunk_base_rate": 0.005,
+  "bunk_rate": 0.01,
+  "kill_rate": 60,
+  "killed_rate": 40,
+  "pats": 772200,
+  "inv_rn": 10,
+  "ffp_supply": 772200,
+  "ffp_limit": 777,
+  "ffp_max": 777,
+  "ffp_hash": "72606550DB754E17",
+  "allow_mint": 1,
+  "claim_fee": 0.21,
+  "tribe_invite_count": 1
+}

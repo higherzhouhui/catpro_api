@@ -1,0 +1,22 @@
+{
+  "tw_user_info": {
+    "id": 984229745322639400,
+    "id_str": "984229745322639360",
+    "name": "fc",
+    "screen_name": "fcihpy",
+    "location": "Wan Chai District, Hong Kong",
+    "url": null,
+    "description": "code is cow",
+    "protected": false,
+    "verified": false,
+    "followers_count": 0,
+    "friends_count": 7,
+    "listed_count": 0,
+    "favourites_count": 2,
+    "statuses_count": 14,
+    "created_at": "2018-04-12T00:40:32.000000Z",
+    "profile_banner_url": "https://pbs.twimg.com/profile_banners/984229745322639360/1704990481",
+    "profile_image_url_https": "https://pbs.twimg.com/profile_images/1745482512431017984/AdPfMPXT_normal.jpg",
+    "can_dm": false
+  }
+}

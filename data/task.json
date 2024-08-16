@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "label": "Follow @forkfrenpet",
+    "target": "https://twitter.com/forkfrenpet",
+    "type": "once",
+    "action": "follow",
+    "total": 1,
+    "box_amount": 2
+  },
+  {
+    "id": 2,
+    "label": "RT & Like",
+    "target": "https://twitter.com/forkfrdenpet/status/1746309816836829484",
+    "type": "once",
+    "action": "rt&like",
+    "total": 2,
+    "box_amount": 3
+  },
+  {
+    "id": 3,
+    "label": "Tell the world ",
+    "target": "Join me @forkfrenpet as we delve into the world of inscription gaming with ponzinomics and memenomics! 📜💰#eths #ethspet #inscriptions",
+    "type": "day",
+    "action": "reply",
+    "total": 0,
+    "box_amount": 2
+  },
+  {
+    "id": 4,
+    "label": "Daily tweet reply",
+    "target": "https://twitter.com/forkfrenpet/status/1746309816836829484",
+    "type": "day",
+    "action": "reply",
+    "total": 0,
+    "box_amount": 2
+  }
+]

@@ -1,0 +1,12 @@
+node_modules/
+.idea/
+*.log
+node.conf
+tw_post.log
+node.conf
+package-lock.json
+.env
+yarn.lock
+dump.rdb
+logs/
+.DS_Store

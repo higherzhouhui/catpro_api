@@ -1,0 +1,282 @@
+[
+  {
+    "id": 10000,
+    "name": "ffp",
+    "desc": "ffp",
+    "price": 25,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": "Can't be bonked for 24 hours"
+  },
+  {
+    "id": 10001,
+    "name": "🛡️",
+    "desc": "shield",
+    "price": 25,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10002,
+    "name": "pts",
+    "desc": "pts",
+    "price": 0,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10003,
+    "name": "Midnight Meow",
+    "desc": "",
+    "price": 360,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10004,
+    "name": "🍌",
+    "desc": "sushi",
+    "price": 250,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10005,
+    "name": "Bunny Buddy",
+    "desc": "",
+    "price": 1100,
+   "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10006,
+    "name": "Midnight Meow",
+    "desc": "",
+    "price": 360,
+    "delta": 10,
+    "supply": 100,
+    "live": 0,
+    "label": "A sneaky companion for your adventures"
+  },
+  {
+    "id": 10007,
+    "name": "Feline Mask",
+    "desc": "",
+    "price": 215,
+   "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10008,
+    "name": "Baby Yoda Mask",
+    "desc": "",
+    "price": 1500,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10009,
+    "name": "Psycho Bunny",
+    "desc": "",
+    "price": 180,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10010,
+    "name": "Thuglife Shades",
+    "desc": "",
+    "price": 550,
+    "delta": 20,
+    "supply": 69,
+    "live": 0,
+    "label": "For when your pet,s feeling extra cool"
+  },
+  {
+    "id": 10011,
+    "name": "Panda Peepers",
+    "desc": "",
+    "price": 155,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10012,
+    "name": "Laser Lenses",
+    "desc": "",
+    "price": 1400,
+   "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10013,
+    "name": "Twintail Tango Wig",
+    "desc": "",
+    "price": 490,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10014,
+    "name": "J-Punk Wig",
+    "desc": "",
+    "price": 7000,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10015,
+    "name": "Bear Buddy Beanie",
+    "desc": "",
+    "price": 510,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10016,
+    "name": "Jade Panda Pal",
+    "desc": "",
+    "price": 200,
+    "tod": 0,
+    "pts": 8909,
+    "exp": 0,
+    "label": ""
+  },
+  {
+    "id": 10017,
+    "name": "🍌",
+    "desc": "",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10018,
+    "name": "🍌",
+    "desc": "banana",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10019,
+    "name": "🍣",
+    "desc": "sushi",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10020,
+    "name": "🍠",
+    "desc": "sweet potato",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10021,
+    "name": "cake",
+    "desc": "🥯",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  }
+  {
+    "id": 10022,
+    "name": "🫘",
+    "desc": "Red bean",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10023,
+    "name": "🥛",
+    "desc": "milk",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10024,
+    "name": "🍗",
+    "desc": "Chicken legs",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10025,
+    "name": "☕️",
+    "desc": "coffee",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10026,
+    "name": "🍄",
+    "desc": "mushroom",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  },
+  {
+    "id": 10027,
+    "name": "tod",
+    "desc": "tod",
+    "price": 180,
+    "delta": 5,
+    "supply": 100,
+    "live": 0,
+    "label": "Brings you luck and prosperity"
+  }
+]
