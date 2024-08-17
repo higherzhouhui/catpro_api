@@ -184,10 +184,10 @@ async function userCheck(req, resp) {
       const newCheckInList = checkInList.filter(item => {
         return moment(item.dataValues.createdAt).utc().format('MM-DD') != today
       })
-
+      
       newCheckInList.map((item, index) => {
         if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
-          day = index + 2
+          day = (index + 2) % 7
         }
       })
 
