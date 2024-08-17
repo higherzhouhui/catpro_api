@@ -108,8 +108,8 @@ const Event = db.sequelize.define(
     score: { type: DataTypes.INTEGER },
     from_user: { type: DataTypes.BIGINT },
     to_user: { type: DataTypes.BIGINT },
-    from_username: { type: DataTypes.STRING, defaultValue: 'tomato' },
-    to_username: { type: DataTypes.STRING, defaultValue: 'tomato' },
+    from_username: { type: DataTypes.STRING, defaultValue: 'system' },
+    to_username: { type: DataTypes.STRING, defaultValue: 'system' },
     desc: { type: DataTypes.STRING },
     ticket: { type: DataTypes.INTEGER },
     is_really: { type: DataTypes.BOOLEAN, defaultValue: true }

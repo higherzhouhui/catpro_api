@@ -66,7 +66,7 @@ async function login(req, resp) {
                 increment_score = info.invite_premiumAccount_score
                 increment_ticket = info.invite_premiumAccount_ticket
               }
-            
+
               if (parentUser) {
                 if (isShareGame) {
                   const event_data = {
@@ -299,7 +299,7 @@ async function bindWallet(req, resp) {
       },
       transaction: tx
     })
-   
+
     await tx.commit()
     return successResp(resp, { wallet: req.body.wallet, wallet_nickName: req.body.wallet_nickName }, 'success')
   } catch (error) {
@@ -532,7 +532,6 @@ async function startFarming(req, resp) {
         from_user: req.id,
         from_username: user.username,
         to_user: 0,
-        to_username: 'system',
         score: 0,
         ticket: 0,
         desc: `${user.username} start farming`
@@ -586,40 +585,54 @@ async function getRewardFarming(req, resp) {
             user_id: id
           }
         })
-        // 如果本次farming结束则执行给上级返
-        if (user.startParam && Date.now() > new Date(end_farm_time).getTime()) {
-          const parentUser = await Model.User.findOne({
-            where: {
-              user_id: user.startParam
-            }
-          })
-          if (parentUser) {
-            const config = await Model.Config.findOne()
-            const score_ratio = Math.floor(1080 * config.invite_friends_ratio / 100)
-            await parentUser.increment({
-              score: score_ratio,
-              invite_friends_farm_score: score_ratio
-            })
-            event_data = {
-              type: 'harvest_farming',
-              from_user: req.id,
-              from_username: user.username,
-              to_user: parentUser.user_id,
-              to_username: parentUser.username,
-              score: score_ratio,
-              ticket: 0,
-              desc: `${parentUser.username} get farming harvest ${score_ratio} $tomato from ${user.username}`
-            }
-            await Model.Event.create(event_data)
+      // 如果本次farming结束则执行给上级返
+      if (user.startParam && Date.now() > new Date(end_farm_time).getTime()) {
+        const parentUser = await Model.User.findOne({
+          where: {
+            user_id: user.startParam
           }
+        })
+        if (parentUser) {
+          const config = await Model.Config.findOne()
+          const score_ratio = Math.floor(1080 * config.invite_friends_ratio / 100)
+          await parentUser.increment({
+            score: score_ratio,
+            invite_friends_farm_score: score_ratio
+          })
+          event_data = {
+            type: 'harvest_farming',
+            from_user: req.id,
+            from_username: user.username,
+            to_user: parentUser.user_id,
+            to_username: parentUser.username,
+            score: score_ratio,
+            ticket: 0,
+            desc: `${parentUser.username} get farming harvest ${score_ratio} $tomato from ${user.username}`
+          }
+          await Model.Event.create(event_data)
         }
+      }
+
+      if (Date.now() > new Date(end_farm_time).getTime()) {
+        event_data = {
+          type: 'harvest_farming',
+          from_user: req.id,
+          from_username: user.username,
+          to_user: 0,
+          score: 1080,
+          ticket: 0,
+          desc: `${user.username} get farming harvest 1080 $tomato`
+        }
+        await Model.Event.create(event_data)
+      }
+
 
       return successResp(resp, {
         score: user.score + score,
         farm_score: user.farm_score + score,
         last_farming_time: now,
         farm_reward_score: score
-      }, '开始farming')
+      }, 'farming收货')
     })
   } catch (error) {
     user_logger().error('收货果实失败', error)
