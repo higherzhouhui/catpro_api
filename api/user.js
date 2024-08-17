@@ -584,9 +584,10 @@ async function getRewardFarming(req, resp) {
           where: {
             user_id: id
           }
-        })
+        }
+      )
       // 如果本次farming结束则执行给上级返
-      if (user.startParam && Date.now() > new Date(end_farm_time).getTime()) {
+      if (user.startParam && now.getTime() > new Date(end_farm_time).getTime()) {
         const parentUser = await Model.User.findOne({
           where: {
             user_id: user.startParam
@@ -612,8 +613,8 @@ async function getRewardFarming(req, resp) {
           await Model.Event.create(event_data)
         }
       }
-
-      if (Date.now() > new Date(end_farm_time).getTime()) {
+      // 记录收获
+      if (now.getTime() > new Date(end_farm_time).getTime()) {
         event_data = {
           type: 'harvest_farming',
           from_user: req.id,
