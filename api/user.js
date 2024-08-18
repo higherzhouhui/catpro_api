@@ -184,7 +184,7 @@ async function userCheck(req, resp) {
       const newCheckInList = checkInList.filter(item => {
         return moment(item.dataValues.createdAt).utc().format('MM-DD') != today
       })
-      
+
       newCheckInList.map((item, index) => {
         if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
           day = (index + 2) % 7
@@ -481,14 +481,14 @@ async function cancelCreateUserInfo(req, resp) {
 
 async function resetTicketInfo(req, resp) {
   try {
-    const result = await dataBase.sequelizeAuto.transaction(async (t) => {
-      await Model.User.update(
-        {
-          ticket: 5,
-        },
-        { where: true })
+    await dataBase.sequelizeAuto.transaction(async (t) => {
+      await Model.User.update({
+        ticket: 5
+      }, {
+        where: {}
+      })
+      return successResp(resp, {}, '重置成功')
     })
-    return successResp(resp, {}, '重置成功')
   } catch (error) {
     return errorResp(resp, 400, `${error}`)
   }
@@ -627,13 +627,12 @@ async function getRewardFarming(req, resp) {
         await Model.Event.create(event_data)
       }
 
-
       return successResp(resp, {
         score: user.score + score,
         farm_score: user.farm_score + score,
         last_farming_time: now,
         farm_reward_score: score
-      }, 'farming收货')
+      }, 'farming收获')
     })
   } catch (error) {
     user_logger().error('收货果实失败', error)

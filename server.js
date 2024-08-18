@@ -56,11 +56,10 @@ const white_list = [
   '/api/system/scan_block',
   '/api/admin/migrateData',
   '/api/dogAdmin/login',
-  '/api//system/resetTicket',
+  '/api/system/resetTicket',
   /^\/api\/nft\/\d+$/,
   '/api/system/getFfpAndEthPrice',
-  '/api/system/distributeRewards',
-  '/api/system/distributePts',
+
 ]
 app.use((req, resp, next) => {
   const path = req.path // 获取请求的路径
