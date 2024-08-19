@@ -362,12 +362,45 @@ async function getUserList(req, resp) {
 async function getSubUserTotal(req, resp) {
   user_logger().info('获取下级总会员', req.id)
   try {
-    const user = await Model.User.findAndCountAll({
+    const subUser = await Model.User.findAndCountAll({
       where: {
         startParam: req.id
       }
     })
-    return successResp(resp, { total: user.count }, 'success')
+   
+    const user = await Model.User.findOne({
+      where: {
+        user_id: req.id
+      }
+    })
+    let parentObj = {}
+    if (user.startParam) {
+      const parent = await Model.User.findOne({
+        where: {
+          user_id: user.startParam
+        },
+        attributes: ['username']
+      })
+      if (parent) {
+        parentObj.username = parent.username
+        if (!subUser.count) {
+          const eventList = await Model.Event.findAll({
+            where: {
+              from_user: req.id,
+              to_user: user.startParam
+            },
+          })
+          let totalScore = 0
+          eventList.forEach(item => {
+            totalScore += item.score
+          })
+          parentObj.totalScore = totalScore
+          parentObj.list = eventList
+        }
+      }
+    }
+    
+    return successResp(resp, { total: subUser.count, ...parentObj }, 'success')
   } catch (error) {
     user_logger().error('获取下级总会员失败', error)
     console.error(`${error}`)
