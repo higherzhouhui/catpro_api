@@ -613,7 +613,7 @@ async function resetTicketInfo(req, resp) {
   try {
     await dataBase.sequelizeAuto.transaction(async (t) => {
       await Model.User.update({
-        ticket: 5
+        ticket: 6
       }, {
         where: {}
       })
