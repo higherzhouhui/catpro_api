@@ -86,13 +86,14 @@ const Config = db.sequelize.define(
   'Config',
   {
     ticket: { type: DataTypes.INTEGER, defaultValue: 6 },
-    register_score: { type: DataTypes.INTEGER, defaultValue: 2000 },
-    premium_score: { type: DataTypes.INTEGER, defaultValue: 20000 },
     invite_normalAccount_score: { type: DataTypes.INTEGER, defaultValue: 2000 },
     invite_normalAccount_ticket: { type: DataTypes.INTEGER, defaultValue: 1 },
     invite_premiumAccount_score: { type: DataTypes.INTEGER, defaultValue: 20000 },
     invite_premiumAccount_ticket: { type: DataTypes.INTEGER, defaultValue: 5 },
     invite_friends_ratio: { type: DataTypes.INTEGER, defaultValue: 10 },
+    game_time: { type: DataTypes.INTEGER, defaultValue: 30 },
+    special_reward: { type: DataTypes.INTEGER, defaultValue: 2500 },
+    farm_score: { type: DataTypes.INTEGER, defaultValue: 1080 },
   },
   {
     tableName: 'config'
@@ -105,13 +106,13 @@ const Event = db.sequelize.define(
   'Event',
   {
     type: { type: DataTypes.STRING },
-    score: { type: DataTypes.INTEGER },
+    score: { type: DataTypes.INTEGER, defaultValue: 0 },
     from_user: { type: DataTypes.BIGINT },
-    to_user: { type: DataTypes.BIGINT },
+    to_user: { type: DataTypes.BIGINT, defaultValue: 0 },
     from_username: { type: DataTypes.STRING, defaultValue: 'system' },
     to_username: { type: DataTypes.STRING, defaultValue: 'system' },
     desc: { type: DataTypes.STRING },
-    ticket: { type: DataTypes.INTEGER },
+    ticket: { type: DataTypes.INTEGER, defaultValue: 0 },
     is_really: { type: DataTypes.BOOLEAN, defaultValue: true }
   },
   {

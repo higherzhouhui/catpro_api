@@ -3,6 +3,7 @@ const { errorResp, successResp } = require('./common')
 const Model = require('./models')
 const utils = require('./utils')
 const dataBase = require('./database')
+const moment = require('moment')
 async function example(req, resp) {
   manager_logger().info('本次迁移成功:')
   try {
@@ -80,7 +81,7 @@ async function getUserList(req, resp) {
   manager_logger().info('查看会员列表')
   try {
     const data = req.query
-    const where = {}
+    let where = {}
     if (data.username) {
       where.username = {
         [dataBase.Op.like]: `%${data.username}%`
@@ -115,18 +116,13 @@ async function getUserList(req, resp) {
       const todayEnd = new Date(todayStart);
       todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
       if (flag) {
-        where.check_date = {
-          [dataBase.Op.gte]: todayStart,
-          [dataBase.Op.lt]: todayEnd,
-        }
+        where.check_date = moment().utc().format('MM-DD')
       } else {
-        where.check_date = {
-          [dataBase.Op.or]: [
-            {
-              [dataBase.Op.lt]: todayStart,
-            },
-            null
-          ]
+        where = {
+          ...where,
+          check_date: {
+            [dataBase.Op.ne]: moment().utc().format('MM-DD')
+          }
         }
       }
     }
@@ -448,11 +444,11 @@ async function getExpList(req, resp) {
       where.lv = data.lv
     }
 
-    const list = await Model.ExpList.findAndCountAll({
-      order: [['lv', 'asc']],
+    const list = await Model.CheckInReward.findAndCountAll({
+      order: [['day', 'asc']],
       where,
     })
-    const total = await Model.ExpList.count()
+    const total = await Model.CheckInReward.count()
     return successResp(resp, { ...list, total }, '成功！')
   } catch (error) {
     manager_logger().info('查看等级失败', error)
@@ -565,15 +561,39 @@ async function updateUserInfo(req, resp) {
         }
       }
     )
-    await Model.Event.create({
-      type: 'system_change',
-      from_user: 1,
-      to_user: data.user_id,
-      from_username: 'system',
-      to_username: data.username,
-      score: data.score - oldUser.score,
-      desc: `系统操作score:${data.score - oldUser.score}`
-    })
+    if (data.score !== oldUser.score) {
+      await Model.Event.create({
+        type: 'system_change',
+        from_user: 0,
+        to_user: data.user_id,
+        from_username: 'system',
+        to_username: data.username,
+        score: data.score - oldUser.score,
+        desc: `系统操作score:${data.score - oldUser.score}`
+      })
+    }
+    if (data.ticket !== oldUser.ticket) {
+      await Model.Event.create({
+        type: 'system_change',
+        from_user: 0,
+        to_user: data.user_id,
+        from_username: 'system',
+        to_username: data.username,
+        ticket: data.ticket - oldUser.ticket,
+        desc: `系统操作ticket:${data.ticket - oldUser.ticket}`
+      })
+    }
+    if (data.startParam !== oldUser.startParam) {
+      await Model.Event.create({
+        type: 'system_change',
+        from_user: 0,
+        to_user: data.user_id,
+        from_username: 'system',
+        to_username: data.username,
+        score: 0,
+        desc: `系统操作:更改${data.username}的上级ID为${data.startParam}`
+      })
+    }
     return successResp(resp, {}, '成功！')
   } catch (error) {
     manager_logger().info('更新会员信息', error)
@@ -750,7 +770,7 @@ async function updateExpList(req, resp) {
     if (data.id) {
       const upObj = JSON.parse(JSON.stringify(data))
       delete upObj.id
-      await Model.ExpList.update(
+      await Model.CheckInReward.update(
         upObj,
         {
           where: {
@@ -759,7 +779,7 @@ async function updateExpList(req, resp) {
         }
       )
     } else {
-      await Model.ExpList.create(data)
+      await Model.CheckInReward.create(data)
     }
     return successResp(resp, {}, '成功！')
   } catch (error) {
@@ -1016,7 +1036,7 @@ async function removeLevel(req, resp) {
   manager_logger().info('删除等级')
   try {
     const data = req.body
-    await Model.ExpList.destroy(
+    await Model.CheckInReward.destroy(
       {
         where: {
           id: data.id

@@ -83,6 +83,7 @@ async function end(req, resp) {
           from_user: req.id,
           from_username: user.username,
           score: score,
+          to_user: 0,
           ticket: 0,
           desc: `${user.username} play game GET ${score} $tomato`
         }
