@@ -99,7 +99,7 @@ const Config = db.sequelize.define(
     tableName: 'config'
   }
 )
-// Config.sync({ force: true })
+Config.sync({ force: true })
 
 /** 操作日志  */
 const Event = db.sequelize.define(
