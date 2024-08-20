@@ -24,6 +24,8 @@ router.get('/user/createUser', user.createUserInfo)
 router.get('/user/cancelCreateUser', user.cancelCreateUserInfo)
 router.get('/user/startFarming', user.startFarming)
 router.get('/user/getRewardFarming', user.getRewardFarming)
+router.get('/user/getMagicPrize', user.getMagicPrize)
+router.get('/user/getMyScoreHistory', user.getMyScoreHistory)
 
 router.get('/game/begin', game.begin)
 router.post('/game/end', game.end)

@@ -438,6 +438,47 @@ async function getSubUserList(req, resp) {
 }
 
 /**
+ * get /api/user/getMyScoreHistory
+ * @summary 获取我的积分记录
+ * @tags user
+ * @description 获取我的积分记录
+ * @param {string}  page.query.required  -  分页
+ * @security - Authorization
+ */
+async function getMyScoreHistory(req, resp) {
+  user_logger().info('获取我的积分记录', req.id)
+  try {
+    const page = req.query.page
+    const list = await Model.Event.findAndCountAll({
+      order: [['createdAt', 'desc']],
+      attributes: ['from_username', 'score', 'createdAt', 'type'],
+      offset: (page - 1) * 20,
+      limit: 20 * 1,
+      where: {
+        score: {
+          [dataBase.Op.gt]: 0
+        },
+        [dataBase.Op.or]: [
+          {
+            from_user: req.id,
+            to_user: 0,
+          },
+          {
+            to_user: req.id,
+          }
+        ],
+        
+      },
+    })
+    return successResp(resp, { ...list }, 'success')
+  } catch (error) {
+    user_logger().error('获取我的积分记录失败', error)
+    console.error(`${error}`)
+    return errorResp(resp, `${error}`)
+  }
+}
+
+/**
  * get /api/user/getInfo
  * @summary 获取用户信息
  * @tags user
@@ -503,6 +544,62 @@ async function cancelCreateUserInfo(req, resp) {
   return successResp(resp, {}, '取消成功')
 }
 
+
+/**
+ * get /api/user/getMagicPrize
+ * @summary 获取神秘大奖
+ * @tags user
+ * @description 获取神秘大奖
+ * @security - Authorization
+ */
+
+async function getMagicPrize(req, resp) {
+  user_logger().info('获取神秘大奖', req.id)
+  try {
+    await dataBase.sequelizeAuto.transaction(async (t) => {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
+      const todayEnd = new Date(todayStart);
+      todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
+      const isEvent = await Model.Event.findOne({
+        where: {
+          from_user: req.id,
+          type: 'get_magicPrize',
+          createdAt: {
+            [dataBase.Op.gte]: todayStart,
+            [dataBase.Op.lt]: todayEnd,
+          }
+        }
+      })
+      const user = await Model.User.findOne({
+        where: {
+          user_id: req.id
+        }
+      })
+      if (user && !isEvent) {
+        await user.increment({
+          score: 2500
+        })
+        const event_data = {
+          type: 'get_magicPrize',
+          from_user: req.id,
+          from_username: user.username,
+          to_user: 0,
+          score: 2500,
+          ticket: 0,
+          desc: `${user.username} get magic prize`
+        }
+        await Model.Event.create(event_data) 
+        return successResp(resp, {score: user.score + 2500}, 'success')
+      } else {
+        return errorResp(resp, 400, 'user had get')
+      }
+    })
+  } catch (error) {
+    user_logger().info('获取神秘大奖失败', `${error}`)
+    return errorResp(resp, 400, `${error}`)
+  }
+}
 
 /**
  * get /api/user/resetTicket
@@ -580,6 +677,8 @@ async function startFarming(req, resp) {
     return errorResp(resp, 400, `${error}`)
   }
 }
+
+
 
 
 /**
@@ -763,5 +862,7 @@ module.exports = {
   resetTicketInfo,
   startFarming,
   getRewardFarming,
-  getSubUserTotal
+  getSubUserTotal,
+  getMagicPrize,
+  getMyScoreHistory
 }
