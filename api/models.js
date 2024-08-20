@@ -45,7 +45,7 @@ const User = db.sequelize.define(
     ]
   }
 )
-// User.sync({ alter: true })
+User.sync({ alter: true })
 
 
 /** 签到奖励列表  */
@@ -119,7 +119,7 @@ const Event = db.sequelize.define(
   }
 )
 
-// Event.sync({ force: true })
+Event.sync({ alter: true })
 
 /** Manager */
 const Manager = db.sequelize.define(
