@@ -8,7 +8,7 @@ const task = require('./task.js')
 
 const admin = require('./admin.js')
 // admin.init_rewardList()
-admin.init_taskList()
+// admin.init_taskList()
 // admin.init_manager()
 // admin.init_systemConfig()
 // 用户路由
