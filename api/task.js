@@ -79,9 +79,9 @@ async function handle(req, resp) {
           }
         )
         const event_data = {
-          type: `${body.type}_${body.linkType}`,
+          type: `${body.type}`,
           from_user: req.id,
-          from_user_name: user.dataValues.username,
+          from_username: user.dataValues.username,
           score: body.score,
           to_user: 0,
           desc: `${user.dataValues.username} complete ${body.name} task and get ${body.score} $CAT`
