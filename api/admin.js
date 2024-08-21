@@ -37,28 +37,72 @@ async function init_systemConfig() {
 }
 
 async function init_taskList() {
+  await Model.TaskList.sync({ force: true })
   try {
     const list = [
       {
         score: 2000,
-        link: 'https://t.me/hamstermemedapp',
-        name: 'Telegram Community',
+        link: 'https://t.me/+Wmv_Z-_7n-QwMDY1',
+        name: 'Join Portkey Telegram Community',
         ticket: 0,
-        type: 'telegram'
+        linkType: 'telegram',
+        type: 'Game tasks',
       },
       {
-        score: 2000,
-        link: 'https://t.me/hamstermemedapp',
-        name: 'Follow Us',
-        ticket: 0,
-        type: 'twitter'
-      },
-      {
-        score: 2000,
+        score: 5000,
         link: '/wallet',
-        name: 'Bind Wallet',
+        name: 'Connect to Portkey Wallet',
         ticket: 0,
-        type: 'wallet'
+        linkType: 'self',
+        type: 'Protkey Wallet tasks',
+      },
+      {
+        score: 2500,
+        link: 'https://x.com/Portkey_DID',
+        name: 'Connect to Portkey Wallet',
+        ticket: 0,
+        linkType: 'outside',
+        type: 'Protkey Wallet tasks',
+      },
+      {
+        score: 2000,
+        link: 'https://t.me/Portkey_Official_Group',
+        name: 'Join Portkey Telegram Community',
+        ticket: 0,
+        linkType: 'telegram',
+        type: 'Protkey Wallet tasks',
+      },
+      {
+        score: 2000,
+        link: 'https://discord.gg/zB2rJEqP',
+        name: 'Join Portkey Discord Community',
+        ticket: 0,
+        linkType: 'outside',
+        type: 'Protkey Wallet tasks',
+      },
+      {
+        score: 2500,
+        link: 'https://x.com/aelfblockchain',
+        name: 'Follow Aelf on X',
+        ticket: 0,
+        linkType: 'outside',
+        type: 'Aelf Blockchain task',
+      },
+      {
+        score: 2000,
+        link: 'https://t.me/aelfblockchain',
+        name: 'Join Aelf Telegram Community',
+        ticket: 0,
+        linkType: 'telegram',
+        type: 'Aelf Blockchain task',
+      },
+      {
+        score: 2000,
+        link: 'https://discord.gg/Uwp9wvn3',
+        name: 'Join Aelf Discord Community',
+        ticket: 0,
+        linkType: 'outside',
+        type: 'Aelf Blockchain task',
       },
     ]
     list.forEach(async item => {

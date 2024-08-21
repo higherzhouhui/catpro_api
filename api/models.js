@@ -70,9 +70,10 @@ const TaskList = db.sequelize.define(
   {
     name: { type: DataTypes.STRING },
     link: { type: DataTypes.STRING },
-    type: { type: DataTypes.STRING },
+    linkType: { type: DataTypes.STRING },
     score: { type: DataTypes.INTEGER },
     ticket: { type: DataTypes.INTEGER },
+    type: {type: DataTypes.STRING},
   },
   {
     tableName: 'taskList'
