@@ -79,7 +79,7 @@ async function handle(req, resp) {
           }
         )
         const event_data = {
-          type: `${body.type}_task`,
+          type: `${body.type}_${body.linkType}`,
           from_user: req.id,
           from_user_name: user.username,
           score: body.score,
