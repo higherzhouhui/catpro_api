@@ -247,7 +247,7 @@ async function userCheck(req, resp) {
               to_username: parentUser.username,
               score: score_ratio,
               ticket: 0,
-              desc: `${parentUser.username} get checkIn reward ${score_ratio} $tomato from ${user.username}`
+              desc: `${parentUser.username} get checkIn reward ${score_ratio} $CAT from ${user.username}`
             }
             await Model.Event.create(event_data)
           }
@@ -740,7 +740,7 @@ async function getRewardFarming(req, resp) {
             to_username: parentUser.username,
             score: score_ratio,
             ticket: 0,
-            desc: `${parentUser.username} get farming harvest ${score_ratio} $tomato from ${user.username}`
+            desc: `${parentUser.username} get farming harvest ${score_ratio} $CAT from ${user.username}`
           }
           await Model.Event.create(event_data)
         }
@@ -754,7 +754,7 @@ async function getRewardFarming(req, resp) {
           to_user: 0,
           score: 1080,
           ticket: 0,
-          desc: `${user.username} get farming harvest 1080 $tomato`
+          desc: `${user.username} get farming harvest 1080 $CAT`
         }
         await Model.Event.create(event_data)
       }

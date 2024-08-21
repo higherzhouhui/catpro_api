@@ -81,9 +81,10 @@ async function handle(req, resp) {
         const event_data = {
           type: `${body.type}_${body.linkType}`,
           from_user: req.id,
-          from_user_name: user.username,
+          from_user_name: user.dataValues.username,
           score: body.score,
-          desc: `${user.username} complete ${body.name} task and get ${body.score} $TOMATO`
+          to_user: 0,
+          desc: `${user.dataValues.username} complete ${body.name} task and get ${body.score} $CAT`
         }
         await Model.Event.create(event_data)
       }

@@ -85,7 +85,7 @@ async function end(req, resp) {
           score: score,
           to_user: 0,
           ticket: 0,
-          desc: `${user.username} play game GET ${score} $tomato`
+          desc: `${user.username} play game GET ${score} $CAT`
         }
         await Model.Event.create(event_data)
         if (user.startParam) {
@@ -109,7 +109,7 @@ async function end(req, resp) {
               to_username: parentUser.username,
               score: score_ratio,
               ticket: 0,
-              desc: `${parentUser.username} get game reward ${score_ratio} $tomato from ${user.username}`
+              desc: `${parentUser.username} get game reward ${score_ratio} $CAT from ${user.username}`
             }
             await Model.Event.create(event_data)
           }
