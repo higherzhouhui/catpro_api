@@ -187,7 +187,7 @@ async function userCheck(req, resp) {
 
       newCheckInList.map((item, index) => {
         if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
-          day = (index + 2) % 7
+          day = (index + 2) % 7 + 1
         }
       })
 
@@ -385,6 +385,7 @@ async function getSubUserTotal(req, resp) {
         parentObj.username = parent.username
         if (!subUser.count) {
           const eventList = await Model.Event.findAll({
+            order: [['createdAt', 'desc']],
             where: {
               from_user: req.id,
               to_user: user.startParam
