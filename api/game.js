@@ -35,9 +35,11 @@ async function begin(req, resp) {
           type: 'play_game',
           from_user: req.id,
           from_username: user.username,
+          to_user: user.username,
+          to_username: user.username,
           score: 0,
           ticket: -1,
-          desc: `${user.username} play game`
+          desc: `${user.username} begin play game`
         }
         await Model.Event.create(event_data)
 
@@ -83,7 +85,8 @@ async function end(req, resp) {
           from_user: req.id,
           from_username: user.username,
           score: score,
-          to_user: 0,
+          to_user: user.username,
+          to_username: user.username,
           ticket: 0,
           desc: `${user.username} play game GET ${score} $CAT`
         }

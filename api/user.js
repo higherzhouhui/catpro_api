@@ -468,6 +468,10 @@ async function getMyScoreHistory(req, resp) {
             to_user: 0,
           },
           {
+            from_user: req.id,
+            to_user: req.id,
+          },
+          {
             to_user: req.id,
           }
         ],
@@ -587,7 +591,8 @@ async function getMagicPrize(req, resp) {
           type: 'get_magicPrize',
           from_user: req.id,
           from_username: user.username,
-          to_user: 0,
+          to_username: user.username,
+          to_user: req.id,
           score: 2500,
           ticket: 0,
           desc: `${user.username} get magic prize`
@@ -664,7 +669,8 @@ async function startFarming(req, resp) {
         type: 'start_farming',
         from_user: req.id,
         from_username: user.username,
-        to_user: 0,
+        to_username: user.username,
+        to_user: req.id,
         score: 0,
         ticket: 0,
         desc: `${user.username} start farming`
@@ -754,7 +760,8 @@ async function getRewardFarming(req, resp) {
           type: 'harvest_farming',
           from_user: req.id,
           from_username: user.username,
-          to_user: 0,
+          to_username: user.username,
+          to_user: req.id,
           score: 1080,
           ticket: 0,
           desc: `${user.username} get farming harvest 1080 $CAT`
