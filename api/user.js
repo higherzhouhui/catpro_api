@@ -37,10 +37,25 @@ async function login(req, resp) {
         data.user_id = data.id
         // 初始化积分
         data.score = info.invite_normalAccount_score
+        data.ticket = info.invite_normalAccount_ticket
         // 如果是会员则额外增加
         if (data.isPremium) {
           data.score += info.invite_premiumAccount_score
+          data.ticket = info.invite_premiumAccount_ticket
         }
+
+        const event_data = {
+          type: 'register',
+          from_user: data.id,
+          to_user: data.id,
+          score: data.score,
+          ticket: data.ticket,
+          from_username: data.username,
+          to_username: data.username,
+          desc: `${data.username}  join us!`
+        }
+        await Model.Event.create(event_data)
+
         try {
           // 给上级用户加积分
           if (data.startParam) {
@@ -82,7 +97,7 @@ async function login(req, resp) {
                   await Model.Event.create(event_data)
                 }
                 const event_data = {
-                  type: 'register',
+                  type: 'Inviting',
                   from_user: data.id,
                   to_user: inviteId,
                   score: increment_score,
@@ -221,6 +236,8 @@ async function userCheck(req, resp) {
           type: 'checkIn',
           from_user: req.id,
           from_username: user.username,
+          to_user: req.id,
+          to_username: user.username,
           desc: `${user.username} is checked`,
           score: reward.score,
           ticket: reward.ticket,
@@ -455,7 +472,7 @@ async function getMyScoreHistory(req, resp) {
     const page = req.query.page
     const list = await Model.Event.findAndCountAll({
       order: [['createdAt', 'desc']],
-      attributes: ['from_username', 'score', 'createdAt', 'type'],
+      attributes: ['from_username', 'score', 'createdAt', 'type', 'ticket'],
       offset: (page - 1) * 20,
       limit: 20 * 1,
       where: {
