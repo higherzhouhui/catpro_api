@@ -5,6 +5,7 @@ node.conf
 tw_post.log
 node.conf
 package-lock.json
+.env
 yarn.lock
 dump.rdb
 logs/
