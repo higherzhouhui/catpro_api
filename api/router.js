@@ -59,9 +59,9 @@ router.get('/dogAdmin/admin/list', manage.getAdminList)
 router.post('/dogAdmin/admin/update', manage.updateAdminInfo)
 router.post('/dogAdmin/admin/remove', manage.removeAdminInfo)
 
-router.get('/dogAdmin/pet/list', manage.getPetList)
-router.post('/dogAdmin/pet/update', manage.updatePetInfo)
-router.post('/dogAdmin/pet/remove', manage.removePetInfo)
+router.get('/dogAdmin/task/list', manage.getTaskList)
+router.post('/dogAdmin/task/update', manage.updateTaskInfo)
+router.post('/dogAdmin/task/remove', manage.removeTaskList)
 
 router.get('/dogAdmin/prize/list', manage.getPrizeList)
 router.post('/dogAdmin/prize/update', manage.updatePrizeInfo)

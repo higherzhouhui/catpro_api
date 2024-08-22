@@ -37,11 +37,11 @@ async function login(req, resp) {
         data.user_id = data.id
         // 初始化积分
         data.score = info.invite_normalAccount_score
-        data.ticket = info.invite_normalAccount_ticket
+        data.ticket = info.ticket
         // 如果是会员则额外增加
         if (data.isPremium) {
           data.score += info.invite_premiumAccount_score
-          data.ticket = info.invite_premiumAccount_ticket
+          data.ticket += info.invite_premiumAccount_ticket
         }
 
         const event_data = {

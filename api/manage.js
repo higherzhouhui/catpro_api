@@ -178,13 +178,125 @@ async function getUserInviteList(req, resp) {
 async function getHomeInfo(req, resp) {
   manager_logger().info('查看首页信息')
   try {
-    const totalScore = await dataBase.sequelize.query(`SELECT SUM(score) AS total FROM user;`, { type: dataBase.QueryTypes.SELECT });
-    const totalPeople = await dataBase.sequelize.query(`SELECT COUNT(*) AS total FROM user;`, { type: dataBase.QueryTypes.SELECT });
-    const todayPeople = await dataBase.sequelize.query(`SELECT COUNT(*) AS total FROM user WHERE DATE(createdAt) = CURDATE();`, { type: dataBase.QueryTypes.SELECT });
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
+
+    const totalUser = await Model.User.count()
+    const totalScore = await Model.User.sum('score')
+    const totalFarmScore = await Model.User.sum('farm_score')
+    const totalGameScore = await Model.User.sum('game_score')
+    const totalHuiYuan = await Model.User.count({
+      where: {
+        isPremium: true
+      }
+    })
+    const todayRegister = await Model.User.count({
+      where: {
+        createdAt: {
+          [dataBase.Op.gt]: todayStart,
+          [dataBase.Op.lt]: todayEnd
+        }
+      }
+    })
+
+    const todayScore = await Model.User.findAll({
+      attributes: [
+        'createdAt',
+        [dataBase.sequelize.literal('SUM(Score)'), 'totalScore']
+      ],
+      where: {
+        createdAt: {
+          [dataBase.Op.gt]: todayStart,
+          [dataBase.Op.lt]: todayEnd
+        }
+      }
+    })
+
+    const todayGameScore = await Model.Event.findAll({
+      attributes: [
+        'createdAt',
+        [dataBase.sequelize.literal('SUM(Score)'), 'totalScore']
+      ],
+      where: {
+        createdAt: {
+          [dataBase.Op.gt]: todayStart,
+          [dataBase.Op.lt]: todayEnd
+        },
+        type: 'play_game_reward'
+      }
+    })
+
+    const todayCheckIn = await Model.User.count({
+      where: {
+        check_date: moment().format('MM-DD')
+      }
+    })
+    // 获取n天前的日期
+    const startDate = new Date()
+    startDate.setHours(23, 59, 59, 0); // 设置今天的结束时间
+
+
+    const getList = async (day, table, type) => {
+      const list = [];
+      for (let i = day - 1; i >= 0; i--) {
+        const endDate = new Date(todayStart);
+        const date = endDate.setDate(endDate.getDate() - i);
+        list.push({
+          date: moment(date).format('YYYY-MM-DD'),
+          num: 0
+        })
+      }
+      let sql = ''
+      if (table == 'user') {
+        sql = `
+        SELECT DATE(createdAt) as date, COUNT(*) as num from user WHERE createdAt >= :endDate AND createdAt <= :startDate GROUP BY date;`;
+      } else {
+        sql = `
+         SELECT DATE(createdAt) as date, sum(score) as num from ${table} WHERE createdAt >= :endDate AND createdAt <= :startDate AND type='${type}' GROUP BY date;`;
+      }
+      const startDate = new Date()
+      const endDate = new Date(todayStart);
+      endDate.setDate(endDate.getDate() - req.query.day);
+
+      const listResult = await dataBase.sequelize.query(sql, {
+        type: dataBase.QueryTypes.SELECT,
+        replacements: { startDate, endDate },
+      });
+
+      list.map((item, index) => {
+        listResult.forEach(rItem => {
+          if (item.date == rItem.date) {
+            list[index].num = rItem.num
+          }
+        })
+      })
+      return list
+    }
+
+   
+
+    const userList = await getList(req.query.day, 'user', '');
+    const farmList = await getList(req.query.day, 'event', 'harvest_farming');
+    const gameList = await getList(req.query.day, 'event', 'play_game_reward');
+    const checkList = await getList(req.query.day, 'event', 'checkIn');
+   
     const resData = {
-      totalScore: totalScore[0].total,
-      totalPeople: totalPeople[0].total,
-      todayPeople: todayPeople[0].total,
+      totalScore,
+      totalUser,
+      totalFarmScore,
+      totalGameScore,
+      totalHuiYuan,
+      todayRegister,
+      todayCheckIn,
+      todayScore: todayScore[0].dataValues.totalScore,
+      todayGameScore: todayGameScore[0].dataValues.totalScore,
+      userList,
+      checkList,
+      farmList,
+      gameList,
+
     }
     return successResp(resp, resData, 'success')
 
@@ -329,49 +441,15 @@ async function getConfigInfo(req, resp) {
 
 /**
  * 
- * 查看宠物列表
+ * 查看任务列表
  */
-async function getPetList(req, resp) {
-  manager_logger().info('查看宠物列表')
+async function getTaskList(req, resp) {
+  manager_logger().info('查看任务列表')
   try {
-    const data = req.query
-    let sql = ''
-
-    if (data.nick_name) {
-      sql += `WHERE nick_name LIKE '%${data.nick_name}%'`
-    }
-
-    if (data.claim_nft_id) {
-      if (sql) {
-        sql += 'AND '
-      } else {
-        sql += 'WHERE '
-      }
-      sql += ` claim_nft_id=${data.claim_nft_id}`
-    }
-
-    if (data.isClaim == 1) {
-      if (sql) {
-        sql += 'AND '
-      } else {
-        sql += 'WHERE '
-      }
-      sql += ` claim_nft_id != 0`
-    }
-    const limit = `LIMIT ${data.pageSize} OFFSET ${(data.pageNum - 1) * data.pageSize}`
-
-    const sqlStr = `SELECT p.*, u.nick_name FROM pet p JOIN user u ON p.uid = u.id ${sql} ORDER BY createdAt DESC ${limit};`
-    const list = await dataBase.sequelize.query(sqlStr, { type: dataBase.QueryTypes.SELECT })
-
-    const countStr = `SELECT COUNT(*) as count FROM pet p JOIN user u ON p.uid = u.id ${sql};`
-    const count = await dataBase.sequelize.query(countStr, { type: dataBase.QueryTypes.SELECT })
-
-    const totalStr = `SELECT COUNT(*) as total FROM pet p JOIN user u ON p.uid = u.id;`
-    const total = await dataBase.sequelize.query(totalStr, { type: dataBase.QueryTypes.SELECT })
-
-    return successResp(resp, { rows: list, total: total[0].total, count: count[0].count }, '成功！')
+    const list = await Model.TaskList.findAndCountAll({})
+    return successResp(resp, list, 'success')
   } catch (error) {
-    manager_logger().info('查看宠物列表失败', error)
+    manager_logger().info('查看任务列表失败', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -822,41 +900,25 @@ async function updateUserPropsList(req, resp) {
 
 /**
  * 
- * 更新宠物信息信息
+ * 更新或创建任务
  */
-async function updatePetInfo(req, resp) {
-  manager_logger().info('更新宠物信息信息')
+async function updateTaskInfo(req, resp) {
+  manager_logger().info('更新或创建任务')
   try {
-    let data = req.body
-
+    const data = req.body
     if (data.id) {
-      const upObj = JSON.parse(JSON.stringify(data))
-      delete upObj.id
-      await Model.Pet.update(
-        upObj,
-        {
-          where: {
-            id: data.id
-          }
+      await Model.TaskList.update(data, {
+        where: {
+          id: data.id
         }
-      )
+      })
     } else {
-      for (var i = 0; i < data.amount; i++) {
-        const randomNumber = Math.floor(Math.random() * (18 - 2 + 1)) + 2
-        const img = `${randomNumber}_0.gif`
-
-        await Model.Pet.create({
-          img: img,
-          exp: 0,
-          tod: utils.get_current_time(),
-          name: 'egg_' + Math.round(Math.random() * 100000000),
-          uid: data.uid
-        })
-      }
+      await Model.TaskList.create(data)
     }
+
     return successResp(resp, {}, '成功！')
   } catch (error) {
-    manager_logger().info('更新宠物信息信息失败', error)
+    manager_logger().info('更新或创建任务失败', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -983,13 +1045,13 @@ async function removeAdminInfo(req, resp) {
 
 /**
  * 
- * 删除宠物
+ * 删除任务
  */
-async function removePetInfo(req, resp) {
-  manager_logger().info('删除管理员')
+async function removeTaskList(req, resp) {
+  manager_logger().info('删除任务')
   try {
     const data = req.body
-    await Model.Pet.destroy(
+    await Model.TaskList.destroy(
       {
         where: {
           id: data.id
@@ -998,7 +1060,7 @@ async function removePetInfo(req, resp) {
     )
     return successResp(resp, {}, '成功！')
   } catch (error) {
-    manager_logger().info('删除管理员失败', error)
+    manager_logger().info('删除任务失败', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1114,9 +1176,9 @@ module.exports = {
   getAdminList,
   updateAdminInfo,
   removeAdminInfo,
-  removePetInfo,
-  updatePetInfo,
-  getPetList,
+  removeTaskList,
+  updateTaskInfo,
+  getTaskList,
   getPrizeList,
   getExpList,
   updatePrizeInfo,
