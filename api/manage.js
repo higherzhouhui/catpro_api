@@ -254,7 +254,7 @@ async function getHomeInfo(req, resp) {
         SELECT DATE(createdAt) as date, COUNT(*) as num from user WHERE createdAt >= :endDate AND createdAt <= :startDate GROUP BY date;`;
       } else {
         sql = `
-         SELECT DATE(createdAt) as date, sum(score) as num from ${table} WHERE createdAt >= :endDate AND createdAt <= :startDate AND type='${type}' GROUP BY date;`;
+         SELECT DATE(createdAt) as date, sum(score) as num from ${table} WHERE createdAt >= :endDate AND createdAt <= :startDate ${type ? `AND type='${type}` : ''} GROUP BY date;`;
       }
       const startDate = new Date()
       const endDate = new Date(todayStart);
@@ -280,7 +280,7 @@ async function getHomeInfo(req, resp) {
     const userList = await getList(req.query.day, 'user', '');
     const farmList = await getList(req.query.day, 'event', 'harvest_farming');
     const gameList = await getList(req.query.day, 'event', 'play_game_reward');
-    const checkList = await getList(req.query.day, 'event', 'checkIn');
+    const scoreList = await getList(req.query.day, 'event', '');
    
     const resData = {
       totalScore,
@@ -293,7 +293,7 @@ async function getHomeInfo(req, resp) {
       todayScore: todayScore[0].dataValues.totalScore,
       todayGameScore: todayGameScore[0].dataValues.totalScore,
       userList,
-      checkList,
+      scoreList,
       farmList,
       gameList,
 
