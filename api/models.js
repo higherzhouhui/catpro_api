@@ -95,12 +95,13 @@ const Config = db.sequelize.define(
     game_time: { type: DataTypes.INTEGER, defaultValue: 30 },
     special_reward: { type: DataTypes.INTEGER, defaultValue: 2500 },
     farm_score: { type: DataTypes.INTEGER, defaultValue: 1080 },
+    tg_link: { type: DataTypes.STRING, defaultValue: 'https://t.me/frenpetgame_bot/forkfrengame'},
   },
   {
     tableName: 'config'
   }
 )
-// Config.sync({ force: true })
+Config.sync({ alter: true })
 /** 操作日志  */
 const Event = db.sequelize.define(
   'Event',

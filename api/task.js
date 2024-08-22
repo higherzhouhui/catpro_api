@@ -83,7 +83,8 @@ async function handle(req, resp) {
           from_user: req.id,
           from_username: user.dataValues.username,
           score: body.score,
-          to_user: 0,
+          to_user: req.id,
+          to_username: user.dataValues.username,
           desc: `${user.dataValues.username} complete ${body.name} task and get ${body.score} $CAT`
         }
         await Model.Event.create(event_data)
