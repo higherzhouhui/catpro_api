@@ -254,7 +254,7 @@ async function getHomeInfo(req, resp) {
         SELECT DATE(createdAt) as date, COUNT(*) as num from user WHERE createdAt >= :endDate AND createdAt <= :startDate GROUP BY date;`;
       } else {
         sql = `
-         SELECT DATE(createdAt) as date, sum(score) as num from ${table} WHERE createdAt >= :endDate AND createdAt <= :startDate ${type ? `AND type='${type}` : ''} GROUP BY date;`;
+         SELECT DATE(createdAt) as date, sum(score) as num from ${table} WHERE createdAt >= :endDate AND createdAt <= :startDate ${type ? `AND type='${type}'` : ''} GROUP BY date;`;
       }
       const startDate = new Date()
       const endDate = new Date(todayStart);
