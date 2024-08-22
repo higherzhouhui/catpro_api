@@ -428,6 +428,9 @@ async function getSubUserList(req, resp) {
       limit: 20 * 1,
       where: {
         to_user: req.id,
+        score: {
+          [dataBase.Op.gt]: 0
+        },
       }
     })
     return successResp(resp, { ...list }, 'success')
@@ -493,7 +496,6 @@ async function getUserInfo(req, resp) {
       where: {
         user_id: req.id
       },
-      attributes: ['score', 'telegram_premium', 'invite_friends_score', 'game_score'],
     })
     return successResp(resp, { userInfo: { ...userInfo.dataValues } }, 'success')
   } catch (error) {
