@@ -204,7 +204,7 @@ async function getHomeInfo(req, resp) {
     const todayScore = await Model.User.findAll({
       attributes: [
         'createdAt',
-        [dataBase.sequelize.literal('SUM(Score)'), 'totalScore']
+        [dataBase.sequelize.literal('SUM(score)'), 'totalScore']
       ],
       where: {
         createdAt: {
@@ -217,7 +217,7 @@ async function getHomeInfo(req, resp) {
     const todayGameScore = await Model.Event.findAll({
       attributes: [
         'createdAt',
-        [dataBase.sequelize.literal('SUM(Score)'), 'totalScore']
+        [dataBase.sequelize.literal('SUM(score)'), 'totalScore']
       ],
       where: {
         createdAt: {
