@@ -282,7 +282,7 @@ async function getHomeInfo(req, resp) {
     const gameList = await getList(req.query.day, 'event', 'play_game_reward');
     const scoreList = await getList(req.query.day, 'event', '');
    
-    const resData = {
+    let resData = {
       totalScore,
       totalUser,
       totalFarmScore,
@@ -296,8 +296,12 @@ async function getHomeInfo(req, resp) {
       scoreList,
       farmList,
       gameList,
-
     }
+    Object.keys(resData).map(key => {
+      if (typeof resData[key] == 'string') {
+        resData[key] = Math.round(resData[key])
+      }
+    })
     return successResp(resp, resData, 'success')
 
   } catch (error) {
