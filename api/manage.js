@@ -201,7 +201,7 @@ async function getHomeInfo(req, resp) {
       }
     })
 
-    const todayScore = await Model.User.findAll({
+    const todayScore = await Model.Event.findAll({
       attributes: [
         'createdAt',
         [dataBase.sequelize.literal('SUM(score)'), 'totalScore']
@@ -297,11 +297,19 @@ async function getHomeInfo(req, resp) {
       farmList,
       gameList,
     }
-    Object.keys(resData).map(key => {
-      if (typeof resData[key] == 'string') {
-        resData[key] = Math.round(resData[key])
-      }
-    })
+    
+    function handleNumber(obj) {
+      const resData = obj
+      Object.keys(resData).forEach(key => {
+        if (!isNaN(resData[key])) {
+          resData[key] = Math.round(resData[key])
+        }
+      })
+      return resData
+    }
+
+    resData = handleNumber(resData)
+   
     return successResp(resp, resData, 'success')
 
   } catch (error) {
