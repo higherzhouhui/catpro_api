@@ -13,6 +13,7 @@ const admin = require('./admin.js')
 // admin.init_systemConfig()
 // 用户路由
 router.post('/user/login', user.login)
+router.post('/user/h5PcLogin', user.h5PcLogin)
 router.post('/user/update', user.updateInfo)
 router.post('/user/check', user.userCheck)
 router.post('/user/bindWallet', user.bindWallet)

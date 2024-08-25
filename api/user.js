@@ -22,9 +22,8 @@ async function login(req, resp) {
     await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
       if (!(data.hash && data.id && data.username && data.authDate)) {
-        await tx.rollback()
         user_logger().error('登录失败', '格式不对')
-        return errorResp(resp, `validate error`)
+        return errorResp(resp,  403, `validate error`)
       }
       let user = await Model.User.findOne({
         where: {
@@ -137,6 +136,130 @@ async function login(req, resp) {
     return errorResp(resp, `${error}`)
   }
 }
+
+
+/**
+ * post /api/user/h5PcLogin
+ * @summary 登录
+ * @tags user
+ * @description 登录接口
+ * @param {string}  id.query.required  -  id
+ * @param {string}  address.query.required  -  address
+ * @param {string}  h5PcLogin.query.required  -  h5PcLogin
+ * @security - Authorization
+ */
+async function h5PcLogin(req, resp) {
+  user_logger().info('PCH5发起登录', req.body)
+  try {
+    await dataBase.sequelize.transaction(async (t) => {
+      const data = req.body
+      if (!(data.wallet && data.wallet_nickName && data.username)) {
+        user_logger().error('登录失败', '格式不对')
+        return errorResp(resp,  403, `validate error`)
+      }
+      let user = await Model.User.findOne({
+        where: {
+          wallet: data.wallet
+        }
+      })
+      // 找到当前用户，如果存在则返回其数据，如果不存在则新创建
+      if (!user) {
+        const info = await Model.Config.findOne()
+        data.user_id = `${new Date().getTime()}`
+        data.id = data.user_id
+        // 初始化积分
+        data.score = info.invite_normalAccount_score
+        data.ticket = info.ticket
+       
+        const event_data = {
+          type: 'register',
+          from_user: data.id,
+          to_user: data.id,
+          score: data.score,
+          ticket: data.ticket,
+          from_username: data.username,
+          to_username: data.username,
+          desc: `${data.username}  join us!`
+        }
+        await Model.Event.create(event_data)
+
+        try {
+          // 给上级用户加积分
+          if (data.startParam) {
+            let isShareGame = data.startParam.includes('SHAREGAME')
+            let inviteId;
+            if (isShareGame) {
+              const param = data.startParam.replace('SHAREGAME', '')
+              inviteId = parseInt(atob(param))
+            } else {
+              inviteId = parseInt(atob(data.startParam))
+            }
+            if (!isNaN(inviteId)) {
+              data.startParam = inviteId
+              const parentUser = await Model.User.findOne({
+                where: {
+                  user_id: inviteId
+                }
+              })
+              let increment_score = info.invite_normalAccount_score
+              let increment_ticket = info.invite_normalAccount_ticket
+             
+              if (parentUser) {
+                if (isShareGame) {
+                  const event_data = {
+                    type: 'share_playGame',
+                    from_user: data.id,
+                    to_user: inviteId,
+                    score: 50,
+                    ticket: 0,
+                    from_username: data.username,
+                    to_username: parentUser.username,
+                    desc: `${parentUser.username} invite ${data.username} play game!`
+                  }
+                  await Model.Event.create(event_data)
+                }
+                const event_data = {
+                  type: 'Inviting',
+                  from_user: data.id,
+                  to_user: inviteId,
+                  score: increment_score,
+                  ticket: increment_ticket,
+                  from_username: data.username,
+                  to_username: parentUser.username,
+                  desc: `${parentUser.username} invite ${data.username} join us!`
+                }
+                await Model.Event.create(event_data)
+                // 顺序不能变
+                if (isShareGame) {
+                  increment_score += 50
+                }
+                await parentUser.increment({
+                  score: increment_score,
+                  invite_friends_score: increment_score,
+                  ticket: increment_ticket
+                })
+              }
+            }
+          }
+        } catch (error) {
+          user_logger().info('执行找父元素失败', error)
+        }
+        if (data.id) {
+          delete data.id
+        }
+        await Model.User.create(data)
+        return successResp(resp, { ...data, is_New: true }, 'success')
+      } else {
+        return successResp(resp, user, 'success')
+      }
+    })
+  } catch (error) {
+    user_logger().error('登录失败', error)
+    console.error(`${error}`)
+    return errorResp(resp, `${error}`)
+  }
+}
+
 
 /**
  * post /api/user/update
@@ -891,5 +1014,6 @@ module.exports = {
   getRewardFarming,
   getSubUserTotal,
   getMagicPrize,
-  getMyScoreHistory
+  getMyScoreHistory,
+  h5PcLogin
 }

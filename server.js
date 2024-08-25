@@ -52,6 +52,7 @@ app.use(cors())
 // 定义不需要校验token的白名单接口
 const white_list = [
   '/api/user/login',
+  '/api/user/h5PcLogin',
   '/api/twitter/callback',
   '/api/system/scan_block',
   '/api/admin/migrateData',
