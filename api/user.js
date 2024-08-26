@@ -256,7 +256,7 @@ async function h5PcLogin(req, resp) {
   } catch (error) {
     user_logger().error('登录失败', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
