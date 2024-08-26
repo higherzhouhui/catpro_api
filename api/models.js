@@ -34,6 +34,7 @@ const User = db.sequelize.define(
     end_farm_time: { type: DataTypes.DATE },
     last_farming_time: { type: DataTypes.DATE },
     is_really: { type: DataTypes.BOOLEAN, defaultValue: true },
+    is_Tg: { type: DataTypes.BOOLEAN, defaultValue: true },
   },
   {
     tableName: 'user',
@@ -45,7 +46,7 @@ const User = db.sequelize.define(
     ]
   }
 )
-// User.sync({ alter: true })
+User.sync({ alter: true })
 
 
 /** 签到奖励列表  */

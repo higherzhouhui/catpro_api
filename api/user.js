@@ -125,7 +125,7 @@ async function login(req, resp) {
           delete data.id
         }
         await Model.User.create(data)
-        return successResp(resp, { ...data, is_New: true }, 'success')
+        return successResp(resp, { ...data, is_Tg: true }, 'success')
       } else {
         return successResp(resp, user, 'success')
       }
@@ -248,7 +248,7 @@ async function h5PcLogin(req, resp) {
           delete data.id
         }
         await Model.User.create(data)
-        return successResp(resp, { ...data, is_New: true }, 'success')
+        return successResp(resp, { ...data, isTg: false }, 'success')
       } else {
         return successResp(resp, user, 'success')
       }
@@ -273,7 +273,7 @@ async function updateInfo(req, resp) {
   const tx = await dataBase.sequelize.transaction()
   try {
     await Model.User.update({
-      is_New: false
+      is_Tg: false
     }, {
       where: {
         user_id: req.id
