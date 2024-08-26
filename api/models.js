@@ -46,7 +46,7 @@ const User = db.sequelize.define(
     ]
   }
 )
-User.sync({ alter: true })
+// User.sync({ alter: true })
 
 
 /** 签到奖励列表  */
