@@ -155,7 +155,7 @@ async function h5PcLogin(req, resp) {
       const data = req.body
       if (!(data.wallet && data.wallet_nickName && data.username)) {
         user_logger().error('登录失败', '格式不对')
-        return errorResp(resp,  403, `validate error`)
+        return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
         where: {
