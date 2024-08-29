@@ -58,6 +58,7 @@ const white_list = [
   '/api/admin/migrateData',
   '/api/dogAdmin/login',
   '/api/system/resetTicket',
+  '/api/system/getConfig',
   /^\/api\/nft\/\d+$/,
   '/api/system/getFfpAndEthPrice',
 
