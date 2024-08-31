@@ -2,9 +2,8 @@ name: Deploy to Server
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main # 或者你想要触发部署的分支
 
 jobs:
   deploy:
@@ -14,10 +13,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Setup SSH key
-      uses: webfactoryLtd/ssh-agent@v0.5.3
+    - name: Set up SSH key
+      uses: webfactory GmbH/ssh-agent@v1
       with:
-        ssh-private-key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Deploy to server
       run: |
