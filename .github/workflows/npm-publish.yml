@@ -24,4 +24,4 @@ jobs:
         chmod 700 ~/.ssh
         ssh-keyscan ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
-        ssh root@${{ secrets.REMOTE_HOST }} "cd /www/wwwroot/catpro_api && npm i && git pull"
+        ssh root@${{ secrets.REMOTE_HOST }} "cd /www/wwwroot/catpro_api && git pull"
