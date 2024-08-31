@@ -638,16 +638,16 @@ async function getMyScoreHistory(req, resp) {
  * @security - Authorization
  */
 async function getUserInfo(req, resp) {
-  user_logger().info('获取下级用户列表', req.id)
+  user_logger().info('获取用户信息', req.id)
   try {
     const userInfo = await Model.User.findOne({
       where: {
         user_id: req.id
       },
     })
-    return successResp(resp, { userInfo: { ...userInfo.dataValues } }, 'success')
+    return successResp(resp, { userInfo: userInfo }, 'success')
   } catch (error) {
-    user_logger().error('获取下级用户列表失败', error)
+    user_logger().error('获取用户信息失败', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
