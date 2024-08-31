@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "nodemon server.js",
-    "pm2": "pm2 start server.js --name 'dogApi-v1'"
+    "dev:local": "set NODE_ENV=1 && nodemon server.js",
+    "pm2": "pm2 start server.js --name 'CAT-v1'"
   },
   "dependencies": {
     "bignumber.js": "^9.1.2",

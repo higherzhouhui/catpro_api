@@ -3,7 +3,12 @@ const { Sequelize, DataTypes, QueryTypes, Op } = require('sequelize')
 const Redis = require('ioredis')
 var log4js = require('log4js')
 var logger = log4js.getLogger('system')
-require('dotenv').config({ path: '../.env' })
+if (process.env.NODE_ENV == 1) {
+  require('dotenv').config({ path: '../.env.dev' })
+} else {
+  require('dotenv').config({ path: '../.env' })
+
+}
 const config = process.env
 
 const cache = new Redis({

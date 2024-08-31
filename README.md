@@ -1,2 +1,7 @@
-# xpet_api
-xpet server api
+#安装依赖
+yarn
+
+#启动
+npm run dev
+
+#接口文档 xxxx/api-docs

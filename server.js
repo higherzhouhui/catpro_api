@@ -6,9 +6,11 @@ const { token_auth, logger } = require('./api/middleware')
 var multipart = require('connect-multiparty')
 var log4js = require('log4js')
 var bodyParser = require('body-parser')
-
-require('dotenv').config()
-
+if (process.env.NODE_ENV == 1) {
+  require('dotenv').config({ path: './.env.dev' })
+} else {
+  require('dotenv').config({ path: './.env' })
+}
 require('./utils/swaggerUI')(app);
 
 app.use(express.json())
@@ -103,7 +105,7 @@ function system_logger() {
   return logger
 }
 
-const port = process.env.SERVER_PORT || 5174
+const port = process.env.SERVER_PORT
 app.listen(port, function () {
   system_logger().info('1.Api server is listen port:' + port)
 })
