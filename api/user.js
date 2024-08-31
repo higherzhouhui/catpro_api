@@ -567,6 +567,9 @@ async function getSubUserList(req, resp) {
       offset: (page - 1) * 20,
       limit: 20 * 1,
       where: {
+        from_user: {
+          [dataBase.Op.not]: req.id
+        },
         to_user: req.id,
         score: {
           [dataBase.Op.gt]: 0
