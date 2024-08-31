@@ -605,19 +605,20 @@ async function getMyScoreHistory(req, resp) {
         score: {
           [dataBase.Op.gt]: 0
         },
-        [dataBase.Op.or]: [
-          {
-            from_user: req.id,
-            to_user: 0,
-          },
-          {
-            from_user: req.id,
-            to_user: req.id,
-          },
-          {
-            to_user: req.id,
-          }
-        ],
+        to_user: req.id
+        // [dataBase.Op.or]: [
+        //   {
+        //     from_user: req.id,
+        //     to_user: 0,
+        //   },
+        //   {
+        //     from_user: req.id,
+        //     to_user: req.id,
+        //   },
+        //   {
+        //     to_user: req.id,
+        //   }
+        // ],
         
       },
     })
