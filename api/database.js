@@ -80,7 +80,7 @@ async function connectDB() {
   try {
     await sequelize.authenticate()
     logger.info('3.Mysql connection has establish successfully!')
-    await sequelize.sync({ alter: false }); // 将 force 设置为 true 将会删除并重新创建所有表
+    await sequelize.sync({ force: false }); // 将 force 设置为 true 将会删除并重新创建所有表
     logger.log('4.Database synchronization successful!');
     logger.log('5.Server started successful!');
   } catch (error) {
