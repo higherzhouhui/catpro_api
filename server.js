@@ -107,5 +107,5 @@ function system_logger() {
 
 const port = process.env.SERVER_PORT
 app.listen(port, function () {
-  system_logger().info('1.Api server is listen port:' + port)
+  system_logger().info(`1.Api server is listen port: ${port}`)
 })

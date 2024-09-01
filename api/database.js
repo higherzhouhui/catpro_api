@@ -1,5 +1,4 @@
-const { Sequelize, DataTypes, QueryTypes, Op } = require('sequelize')
-
+const { Sequelize, QueryTypes, Op } = require('sequelize')
 const Redis = require('ioredis')
 var log4js = require('log4js')
 var logger = log4js.getLogger('system')
@@ -80,7 +79,10 @@ const sequelizeAuto = new Sequelize(
 async function connectDB() {
   try {
     await sequelize.authenticate()
-    logger.info('3.Mysql connection has establish successfully')
+    logger.info('3.Mysql connection has establish successfully!')
+    await sequelize.sync({ alter: false }); // 将 force 设置为 true 将会删除并重新创建所有表
+    logger.log('4.Database synchronization successful!');
+    logger.log('5.Server started successful!');
   } catch (error) {
     logger.error('connect db error', error)
   }
