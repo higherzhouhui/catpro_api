@@ -26,11 +26,19 @@ function middleware_logger() {
 
 function logger(req, resp, next) {
   if (req.method == 'GET') {
-    middleware_logger().info(
-      `用户id:${req.id}-GET请求url:${req.url}-请求参数：${JSON.stringify(
-        req.query
-      )}`
-    )
+    try {
+      middleware_logger().info(
+        `用户id:${req.id || req.query.id}-GET请求url:${req.url}-请求参数：${JSON.stringify(
+          req.query
+        )}`
+      )
+    } catch {
+      middleware_logger().info(
+        `用户id:${req.id}-GET请求url:${req.url}-请求参数：${JSON.stringify(
+          req.query
+        )}`
+      )
+    }
   } else if (req.method == 'POST') {
     middleware_logger().info(
       `用户id:${req.id}-POST请求url:${req.url}-请求body：${JSON.stringify(

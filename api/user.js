@@ -21,9 +21,12 @@ async function login(req, resp) {
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
+      if (!data.username) {
+        data.username = data.firstName + data.lastName
+      }
       if (!(data.hash && data.id && data.username && data.authDate)) {
         user_logger().error('登录失败', '格式不对')
-        return errorResp(resp,  403, `validate error`)
+        return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
         where: {
