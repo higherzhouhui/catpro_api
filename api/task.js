@@ -78,6 +78,10 @@ async function handle(req, resp) {
             }
           }
         )
+        await user.increment({
+          score: body.score,
+          task_score: body.score
+        })
         const event_data = {
           type: `${body.type}`,
           from_user: req.id,
