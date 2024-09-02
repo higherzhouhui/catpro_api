@@ -224,7 +224,7 @@ async function getHomeInfo(req, resp) {
           [dataBase.Op.gt]: todayStart,
           [dataBase.Op.lt]: todayEnd
         },
-        type: 'play_game_reward'
+        type: ['play_game_reward', 'play_game_reward_parent']
       }
     })
 
