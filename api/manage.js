@@ -242,9 +242,10 @@ async function getHomeInfo(req, resp) {
       const list = [];
       for (let i = day - 1; i >= 0; i--) {
         const endDate = new Date(todayStart);
-        const date = endDate.setDate(endDate.getDate() - i);
+        endDate.setDate(endDate.getDate() - i);
+        endDate.setHours(0, 0, 0, 0)
         list.push({
-          date: moment(date).format('YYYY-MM-DD'),
+          date: moment(endDate).format('YYYY-MM-DD'),
           num: 0
         })
       }
@@ -275,13 +276,13 @@ async function getHomeInfo(req, resp) {
       return list
     }
 
-   
+
 
     const userList = await getList(req.query.day, 'user', '');
     const farmList = await getList(req.query.day, 'event', 'harvest_farming');
     const gameList = await getList(req.query.day, 'event', 'play_game_reward');
     const scoreList = await getList(req.query.day, 'event', '');
-   
+
     let resData = {
       totalScore,
       totalUser,
@@ -297,7 +298,7 @@ async function getHomeInfo(req, resp) {
       farmList,
       gameList,
     }
-    
+
     function handleNumber(obj) {
       const resData = obj
       Object.keys(resData).forEach(key => {
@@ -309,7 +310,7 @@ async function getHomeInfo(req, resp) {
     }
 
     resData = handleNumber(resData)
-   
+
     return successResp(resp, resData, 'success')
 
   } catch (error) {
