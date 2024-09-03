@@ -18,15 +18,15 @@ function errorResp(resp, code, msg = 'error') {
 }
 
 function authErrorResp(resp) {
-  return errorResp(resp, 401, 'token 不能为空')
+  return errorResp(resp, 403, 'token is empty')
 }
 
 function tokenInvalidateErrorResp(resp) {
-  return errorResp(resp, 402, 'token 无效')
+  return errorResp(resp, 403, 'token invalid')
 }
 
 function paramErrorResp(resp) {
-  return errorResp(resp, 400, '缺少必须的参数')
+  return errorResp(resp, 400, 'Missing necessary parameters')
 }
 
 function system_config() {

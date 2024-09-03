@@ -2,6 +2,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const app = express()
+const http = require('http')
 const { token_auth, logger } = require('./api/middleware')
 var multipart = require('connect-multiparty')
 var log4js = require('log4js')
@@ -26,7 +27,7 @@ app.use(multipart())
 
 // 存储IP和请求时间的缓存
 const rateLimitCache = new Map();
- 
+
 // 清理旧的缓存记录的定时器
 setInterval(() => {
   rateLimitCache.clear();

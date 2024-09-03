@@ -33,7 +33,7 @@ router.get('/task/list', task.list)
 router.post('/task/handle', task.handle)
 
 router.get('/system/getConfig', manage.getConfigInfo)
-router.get('/system/resetTicket', user.resetTicketInfo)
+// router.get('/system/resetTicket', user.resetTicketInfo)
 
 // 管理后台接口
 router.post('/dogAdmin/login', manage.login)

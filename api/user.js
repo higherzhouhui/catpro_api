@@ -4,6 +4,7 @@ const Model = require('./models')
 const dataBase = require('./database')
 const moment = require('moment/moment')
 const { isLastDay } = require('./utils')
+const cron = require('node-cron');
 
 /**
  * post /api/user/login
@@ -25,7 +26,7 @@ async function login(req, resp) {
         data.username = data.firstName + data.lastName
       }
       if (!(data.hash && data.id && data.username && data.authDate)) {
-        user_logger().error('登录失败', '格式不对')
+        user_logger().error('登录失败', '数据格式异常')
         return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
@@ -132,15 +133,16 @@ async function login(req, resp) {
         return successResp(resp, { ...data, is_Tg: true }, 'success')
       } else {
         //更新用户信息
+        delete data.user.id
         const updateData = data.user
         await user.update(updateData)
 
-        return successResp(resp, user, 'success')
+        return successResp(resp, {user_id: user.user_id, check_date: user.check_date}, 'success')
       }
     })
   } catch (error) {
-    user_logger().error('登录失败', error)
-    console.error(`${error}`)
+    user_logger().error('登录失败:', error)
+    console.error(`登录失败:${error}`)
     return errorResp(resp, `${error}`)
   }
 }
@@ -162,7 +164,7 @@ async function h5PcLogin(req, resp) {
     await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
       if (!(data.wallet && data.wallet_nickName && data.username)) {
-        user_logger().error('登录失败', '格式不对')
+        user_logger().error('登录失败', '数据格式异常')
         return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
@@ -258,7 +260,8 @@ async function h5PcLogin(req, resp) {
         await Model.User.create(data)
         return successResp(resp, { ...data, isTg: false }, 'success')
       } else {
-        return successResp(resp, user, 'success')
+        await user.update(data)
+        return successResp(resp, {user_id: user.user_id, check_date: user.check_date}, 'success')
       }
     })
   } catch (error) {
@@ -306,7 +309,7 @@ async function updateInfo(req, resp) {
  * @security - Authorization
  */
 async function userCheck(req, resp) {
-  user_logger().info('用户信息', req.id)
+  user_logger().info('用户签到', req.id)
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const user = await Model.User.findOne({
@@ -427,7 +430,7 @@ async function userCheck(req, resp) {
  * @security - Authorization
  */
 async function bindWallet(req, resp) {
-  user_logger().info('用户信息', req.id)
+  user_logger().info('用户绑定钱包', req.id)
   const tx = await dataBase.sequelize.transaction()
   try {
     const user = await Model.User.findOne({
@@ -653,11 +656,11 @@ async function getUserInfo(req, resp) {
         user_id: req.id
       },
     })
-    return successResp(resp, { userInfo: userInfo }, 'success')
+    return successResp(resp, userInfo, 'success')
   } catch (error) {
     user_logger().error('获取用户信息失败', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -935,6 +938,30 @@ async function getRewardFarming(req, resp) {
 }
 
 
+async function resetTicketInfoInner() {
+  try {
+    await dataBase.sequelizeAuto.transaction(async (t) => {
+      const config = await Model.Config.findOne()
+      await Model.User.update({
+        ticket: config.ticket
+      }, {
+        where: {}
+      })
+      user_logger().log(`重置成功`)
+    })
+  } catch (error) {
+    user_logger.error(`重置失败：${error}`)
+  }
+}
+// 每天的上午08:00执行任务，指定时区为Asia/Chongqing
+cron.schedule('0 8 * * *', () => {
+  user_logger().log(`开始重置Ticket`)
+  resetTicketInfoInner()
+}, {
+  scheduled: true,
+  timezone: 'Asia/Chongqing'
+});
+
 //----------------------------- private method --------------
 async function autoCreateUser(query) {
   try {
@@ -1027,5 +1054,6 @@ module.exports = {
   getSubUserTotal,
   getMagicPrize,
   getMyScoreHistory,
-  h5PcLogin
+  h5PcLogin,
+  resetTicketInfoInner
 }
