@@ -37,7 +37,7 @@ const rateLimiter = (req, res, next) => {
     rateLimitCache.set(ip, 1);
   } else {
     const count = rateLimitCache.get(ip);
-    if (count >= 20) { // 允许的最大请求次数
+    if (count >= 100) { // 允许的最大请求次数
       return res.status(429).send('Too Many Requests');
     }
     rateLimitCache.set(ip, count + 1);
@@ -55,15 +55,12 @@ app.use(cors())
 const white_list = [
   '/api/user/login',
   '/api/user/h5PcLogin',
-  '/api/twitter/callback',
-  '/api/system/scan_block',
   '/api/admin/migrateData',
   '/api/dogAdmin/login',
   '/api/system/resetTicket',
   '/api/system/getConfig',
   /^\/api\/nft\/\d+$/,
   '/api/system/getFfpAndEthPrice',
-
 ]
 app.use((req, resp, next) => {
   const path = req.path // 获取请求的路径

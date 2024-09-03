@@ -6,7 +6,6 @@ if (process.env.NODE_ENV == 1) {
   require('dotenv').config({ path: '../.env.dev' })
 } else {
   require('dotenv').config({ path: '../.env' })
-
 }
 const config = process.env
 
@@ -80,8 +79,13 @@ async function connectDB() {
   try {
     await sequelize.authenticate()
     logger.info('3.Mysql connection has establish successfully!')
-    // await sequelize.sync({ force: false }); // 将 force 设置为 true 将会删除并重新创建所有表
-    await sequelize.sync({ alter: true }); // 将 force 设置为 true 将会删除并重新创建所有表
+    // 初始化
+    if (process.env.INIT == 1) {
+      await sequelize.sync({ force: true }); // 删除并重新创建所有表
+    } else {
+      // await sequelize.sync({ force: false }); // 将 force 设置为 true 将会删除并重新创建所有表
+      await sequelize.sync({ alter: true }); // 将 force 设置为 true 将会删除并重新创建所有表
+    }
     logger.log('4.Database synchronization successful!');
     logger.log('5.Server started successful!');
   } catch (error) {

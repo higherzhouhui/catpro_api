@@ -24,7 +24,7 @@ async function init_rewardList() {
       await Model.CheckInReward.create(item)
     })
   } catch (error) {
-    console.error('init exp error:', error)
+    console.error('init reward error:', error)
   }
 }
 
@@ -32,7 +32,7 @@ async function init_systemConfig() {
   try {
     await Model.Config.create({})
   } catch (error) {
-    console.error('init exp error:', error)
+    console.error('init config error:', error)
   }
 }
 
