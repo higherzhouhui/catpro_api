@@ -1,7 +1,6 @@
 const { successResp, errorResp } = require('./common')
 const { CheckInReward } = require('./models')
 const utils = require('./utils')
-const { sequelize, QueryTypes } = require('./database')
 
 // 配置日志输出
 var log4js = require('log4js')
@@ -33,8 +32,7 @@ function checkInReward_logger() {
  * @security - Authorization
  */
 async function list(req, resp) {
-  const uid = req.uid
-  checkInReward_logger().info(`用户:${uid}要获取道具列表`)
+  checkInReward_logger().info(`用户:${req.username}要获取道具列表`)
   const list = await CheckInReward.findAll({
     order: [['day', 'asc']],
   })
@@ -49,9 +47,9 @@ async function list(req, resp) {
 async function info(req, resp) {
   const id = req.query.id
   if (!id) {
-    return errorResp(resp, 400, 'no id')
+    return errorResp(resp, 400, 'not fou')
   }
-  checkInReward_logger().info(`用户:${req.uid},查询道具:${id}的信息`)
+  checkInReward_logger().info(`用户:${req.username},查询道具:${id}的信息`)
 
   let checkInReward = await checkInReward.findByPk(id)
   if (!checkInReward) {

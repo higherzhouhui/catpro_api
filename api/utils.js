@@ -1,6 +1,15 @@
-const { cache } = require('./database')
-const { ETH_SWAP_TOKEN, ETH_PRICE } = require('./constants')
 const { Prize, Config } = require('./models')
+const jwt = require('jsonwebtoken')
+const SECRET_KEY = 'CAT_API'
+
+function createToken(data) {
+  const token = jwt.sign(
+    { user: {username: data.username, id: data.user_id} },
+    SECRET_KEY,
+    { expiresIn: '1m' }
+  )
+  return token
+}
 
 function generateOrderNumber(uid) {
   const currentDate = new Date()
@@ -379,5 +388,6 @@ module.exports = {
   whereSqlLint,
   expToNftImg,
   accordingIdGetTime,
-  isLastDay
+  isLastDay,
+  createToken
 }

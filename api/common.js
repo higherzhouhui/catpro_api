@@ -21,8 +21,8 @@ function authErrorResp(resp) {
   return errorResp(resp, 403, 'token is empty')
 }
 
-function tokenInvalidateErrorResp(resp) {
-  return errorResp(resp, 403, 'token invalid')
+function tokenInvalidateErrorResp(resp, msg) {
+  return errorResp(resp, 403, msg || 'token invalid')
 }
 
 function paramErrorResp(resp) {

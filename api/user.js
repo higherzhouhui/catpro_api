@@ -3,7 +3,7 @@ const { errorResp, successResp } = require('./common')
 const Model = require('./models')
 const dataBase = require('./database')
 const moment = require('moment/moment')
-const { isLastDay } = require('./utils')
+const { isLastDay, createToken } = require('./utils')
 const cron = require('node-cron');
 
 /**
@@ -130,14 +130,15 @@ async function login(req, resp) {
           delete data.id
         }
         await Model.User.create(data)
-        return successResp(resp, { ...data, is_Tg: true }, 'success')
+        const token = createToken(data)
+        return successResp(resp, { ...data, is_Tg: true, token }, 'success')
       } else {
         //更新用户信息
         delete data.user.id
         const updateData = data.user
         await user.update(updateData)
-
-        return successResp(resp, {user_id: user.user_id, check_date: user.check_date}, 'success')
+        const token = createToken(user.dataValues)
+        return successResp(resp, {check_date: user.check_date, token}, 'success')
       }
     })
   } catch (error) {
@@ -258,10 +259,12 @@ async function h5PcLogin(req, resp) {
           delete data.id
         }
         await Model.User.create(data)
-        return successResp(resp, { ...data, isTg: false }, 'success')
+        const token = createToken(data)
+        return successResp(resp, { ...data, isTg: false, token }, 'success')
       } else {
-        await user.update(data)
-        return successResp(resp, {user_id: user.user_id, check_date: user.check_date}, 'success')
+        await user.update(data.user)
+        const token = createToken(user.dataValues)
+        return successResp(resp, {token, ...user.dataValues}, 'success')
       }
     })
   } catch (error) {
@@ -318,7 +321,7 @@ async function userCheck(req, resp) {
         }
       })
       if (!user) {
-        return errorResp(resp, `未找到该用户`)
+        return errorResp(resp, 400, `not found`)
       }
       let day = 1
       let today = moment().utc().format('MM-DD')
@@ -418,7 +421,7 @@ async function userCheck(req, resp) {
   } catch (error) {
     user_logger().error('用户签到失败', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
