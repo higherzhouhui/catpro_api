@@ -6,6 +6,7 @@ const { token_auth, logger } = require('./api/middleware')
 var multipart = require('connect-multiparty')
 var log4js = require('log4js')
 var bodyParser = require('body-parser')
+
 if (process.env.NODE_ENV == 1) {
   require('dotenv').config({ path: './.env.dev' })
 } else {

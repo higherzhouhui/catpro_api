@@ -6,17 +6,6 @@ const game = require('./game.js')
 const checkInReward = require('./reward.js')
 const task = require('./task.js')
 
-if (process.env.INIT == 1) {
-  setTimeout(() => {
-    const admin = require('./admin.js')
-    admin.init_rewardList()
-    admin.init_taskList()
-    admin.init_manager()
-    admin.init_systemConfig()
-    console.log('6.init successful!')
-  }, 5000);
-}
-
 // 用户路由
 router.post('/user/login', user.login)
 router.post('/user/h5PcLogin', user.h5PcLogin)

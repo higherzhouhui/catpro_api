@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "init": "set INIT=1 && nodemon server.js",
+    "init": "set INIT=1 && node server.js",
     "start": "nodemon server.js",
     "dev:local": "set NODE_ENV=1 && nodemon server.js",
     "pm2": "pm2 start server.js --name 'CAT-v1'"

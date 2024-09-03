@@ -134,9 +134,25 @@ function admin_logger() {
   return logger
 }
 
+async function init_baseData() {
+  await init_manager()
+  await init_rewardList()
+  await init_systemConfig()
+  await init_taskList()
+
+  const config = await Model.Config.findAll()
+  if (config) {
+    console.log(config)
+    return 'successful!'
+  } else {
+    return 'fail'
+  }
+}
+
 module.exports = {
   init_manager,
   init_rewardList,
   init_systemConfig,
-  init_taskList
+  init_taskList,
+  init_baseData
 }
