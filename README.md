@@ -21,7 +21,7 @@
 
 ## 本地调试启动
 ### npm run dev:local (使用.env.dev配置)
-### npm run dev （使用.env配置）
+### npm run start （使用.env配置）
 
 ## 服务器启动，NODEJS进程守卫，使用pm2;npm i pm2 -g
 ## 启动 或者 直接 pm2 start server.js --name 'cat_api v1'
