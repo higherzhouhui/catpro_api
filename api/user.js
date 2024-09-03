@@ -44,6 +44,7 @@ async function login(req, resp) {
         if (data.isPremium) {
           data.score += info.invite_premiumAccount_score
           data.ticket += info.invite_premiumAccount_ticket
+          data.telegram_premium = info.invite_premiumAccount_score
         }
 
         const event_data = {
@@ -130,6 +131,10 @@ async function login(req, resp) {
         await Model.User.create(data)
         return successResp(resp, { ...data, is_Tg: true }, 'success')
       } else {
+        //更新用户信息
+        const updateData = data.user
+        await user.update(updateData)
+
         return successResp(resp, user, 'success')
       }
     })
