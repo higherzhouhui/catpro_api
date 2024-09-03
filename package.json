@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "init": "set INIT=1 && node server.js",
+    "init": "INIT=1 node server.js",
+    "init:win": "set INIT=1 && node server.js",
     "start": "nodemon server.js",
-    "dev:local": "set NODE_ENV=1 && nodemon server.js",
+    "dev": "set NODE_ENV=1 && nodemon server.js",
+    "dev:linux": "NODE_ENV=1 nodemon server.js",
     "pm2": "pm2 start server.js --name 'CAT-v1'"
   },
   "dependencies": {
