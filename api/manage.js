@@ -37,7 +37,7 @@ async function login(req, resp) {
         { token: token },
         { where: { id: userInfo.id } }
       )
-      token = utils.createToken({username: userInfo.dataValues.account, id: token})
+      token = utils.createToken({username: userInfo.dataValues.account, user_id: token})
       return successResp(resp, { ...userInfo.dataValues, token }, '登录成功！')
     } else {
       return errorResp(resp, 400, `密码错误！`)
