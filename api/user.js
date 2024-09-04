@@ -134,9 +134,8 @@ async function login(req, resp) {
         return successResp(resp, { ...data, is_Tg: true, token }, 'success')
       } else {
         //更新用户信息
-        delete data.user.id
-        const updateData = data.user
-        await user.update(updateData)
+        // const updateData = data.user
+        // await user.update(updateData)
         const token = createToken(user.dataValues)
         return successResp(resp, {check_date: user.check_date, token}, 'success')
       }
@@ -262,7 +261,7 @@ async function h5PcLogin(req, resp) {
         const token = createToken(data)
         return successResp(resp, { ...data, isTg: false, token }, 'success')
       } else {
-        await user.update(data.user)
+        // await user.update(data.user)
         const token = createToken(user.dataValues)
         return successResp(resp, {token, ...user.dataValues}, 'success')
       }
@@ -659,7 +658,8 @@ async function getUserInfo(req, resp) {
         user_id: req.id
       },
     })
-    return successResp(resp, userInfo, 'success')
+    
+    return successResp(resp, userInfo.dataValues, 'success')
   } catch (error) {
     user_logger().error('获取用户信息失败', error)
     console.error(`${error}`)
