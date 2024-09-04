@@ -32,11 +32,12 @@ async function login(req, resp) {
       return errorResp(resp, 400, `该账号不存在！`)
     }
     if (userInfo.dataValues.password == data.password) {
-      const token = new Date().getTime() + 15 * 24 * 60 * 60 * 1000
+      let token = new Date().getTime() + 15 * 24 * 60 * 60 * 1000
       await Model.Manager.update(
         { token: token },
         { where: { id: userInfo.id } }
       )
+      token = utils.createToken({username: userInfo.dataValues.account, id: token})
       return successResp(resp, { ...userInfo.dataValues, token }, '登录成功！')
     } else {
       return errorResp(resp, 400, `密码错误！`)
@@ -54,8 +55,7 @@ async function login(req, resp) {
 async function userInfo(req, resp) {
   manager_logger().info('查询个人信息')
   try {
-    let token = req.headers['authorization']
-    token = token.replace('Bearer ', '')
+    const token = req.id
     const data = req.body
     const userInfo = await Model.Manager.findOne({
       where: {
