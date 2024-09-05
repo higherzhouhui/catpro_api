@@ -134,8 +134,12 @@ async function login(req, resp) {
         return successResp(resp, { ...data, is_Tg: true, token }, 'success')
       } else {
         //更新用户信息
-        // const updateData = data.user
-        // await user.update(updateData)
+        const updateData = data.user
+        await user.update({
+          username: updateData.username,
+          firstName: updateData.firstName,
+          lastName: updateData.lastName,
+        })
         const token = createToken(user.dataValues)
         return successResp(resp, {check_date: user.check_date, token}, 'success')
       }
