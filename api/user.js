@@ -256,6 +256,7 @@ async function h5PcLogin(req, resp) {
             }
           }
         } catch (error) {
+          data.startParam = ''
           user_logger().info('执行找父元素失败', error)
         }
         if (data.id) {
