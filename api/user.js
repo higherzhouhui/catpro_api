@@ -324,9 +324,9 @@ async function userCheck(req, resp) {
         }
       })
       if (!user) {
-        return errorResp(resp, 400, `not found`)
+        return errorResp(resp, 403, `not found`)
       }
-      let day = 1
+      let day = 0
       let today = moment().utc().format('MM-DD')
       const checkInList = await Model.Event.findAll({
         where: {
@@ -342,7 +342,7 @@ async function userCheck(req, resp) {
 
       newCheckInList.map((item, index) => {
         if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
-          day = Math.max((index + 2) % 7, 1)
+          day = (index + 1) % 7
         }
       })
 
@@ -350,10 +350,12 @@ async function userCheck(req, resp) {
         order: [['day', 'asc']],
         attributes: ['day', 'score', 'ticket']
       })
-      const rewardList = allRewardList.filter((item) => {
-        return item.dataValues.day == day
-      })
-      const reward = rewardList[0]
+      let reward = allRewardList[0]
+      try {
+        reward = allRewardList[day]
+      } catch(error) {
+        user_logger().error('check day Error:', 'dayIndex:', day, `${error}`)
+      }
       let check_score = user.check_score
       let score = user.score
       let ticket = user.ticket
@@ -416,7 +418,7 @@ async function userCheck(req, resp) {
         score: score,
         reward_ticket: reward.ticket,
         ticket: ticket,
-        day: day,
+        day: reward.day,
         reward_score: reward.score
       }, 'success')
     }
@@ -445,7 +447,7 @@ async function bindWallet(req, resp) {
       }
     })
     if (!user) {
-      return errorResp(resp, 400, `can't find this user`)
+      return errorResp(resp, 403, `can't find this user`)
     }
     await Model.User.update({
       wallet: req.body.wallet,
