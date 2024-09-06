@@ -655,7 +655,7 @@ async function updateUserInfo(req, resp) {
     if (data.score !== oldUser.score) {
       await Model.Event.create({
         type: 'system_change',
-        from_user: 0,
+        from_user: req.id,
         to_user: data.user_id,
         from_username: 'system',
         to_username: data.username,
