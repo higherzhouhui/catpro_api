@@ -380,7 +380,7 @@ async function userCheck(req, resp) {
           from_username: user.username,
           to_user: req.id,
           to_username: user.username,
-          desc: `${user.username} is checked`,
+          desc: `${user.username} is checked, day: ${reward.day}`,
           score: reward.score,
           ticket: reward.ticket,
         }
