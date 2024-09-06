@@ -342,7 +342,7 @@ async function userCheck(req, resp) {
 
       newCheckInList.map((item, index) => {
         if (isLastDay(new Date(item.dataValues.createdAt).getTime(), index + 1)) {
-          day = (index + 2) % 7 + 1
+          day = Math.max((index + 2) % 7, 1)
         }
       })
 
