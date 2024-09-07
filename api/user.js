@@ -533,6 +533,9 @@ async function getSubUserTotal(req, resp) {
         user_id: req.id
       }
     })
+    if (!user) {
+      return errorResp(resp, 403, `not found`)
+    }
     let parentObj = {}
     if (user.startParam) {
       const parent = await Model.User.findOne({
@@ -665,7 +668,9 @@ async function getUserInfo(req, resp) {
         user_id: req.id
       },
     })
-    
+    if (!userInfo) {
+      return errorResp(resp, 403, `not found`)
+    }
     return successResp(resp, userInfo.dataValues, 'success')
   } catch (error) {
     user_logger().error('获取用户信息失败', error)
@@ -814,6 +819,9 @@ async function startFarming(req, resp) {
           user_id: id
         }
       })
+      if (!user) {
+        return errorResp(resp, 403, `not found`)
+      }
       // 如果当前时间还在结束时间范围内，不允许再次开始
       if (user && user.dataValues.end_farm_time && new Date(user.dataValues.end_farm_time).getTime() > Date.now()) {
         return successResp(resp, {}, 'farming还未结束')
@@ -872,6 +880,9 @@ async function getRewardFarming(req, resp) {
           user_id: id
         }
       })
+      if (!user) {
+        return errorResp(resp, 403, `not found`)
+      }
       const now = new Date()
       const last_farming_time = user.dataValues.last_farming_time || now
       const end_farm_time = user.dataValues.end_farm_time

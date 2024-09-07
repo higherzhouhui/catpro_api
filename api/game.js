@@ -20,7 +20,9 @@ async function begin(req, resp) {
           user_id: req.id
         }
       })
-      // 找到当前用户，如果存在则返回其数据，如果不存在则新创建
+      if (!user) {
+        return errorResp(resp, 403, `not found`)
+      }
       if (user) {
         let ticket = user.dataValues.ticket
 
@@ -71,7 +73,9 @@ async function end(req, resp) {
           user_id: req.id
         }
       })
-      // 找到当前用户，如果存在则返回其数据，如果不存在则新创建
+      if (!user) {
+        return errorResp(resp, 403, `not found`)
+      }
       if (user) {
         const score = req.body.score
         
