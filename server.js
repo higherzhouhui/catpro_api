@@ -103,7 +103,7 @@ function system_logger() {
   return logger
 }
 
-const port = process.env.SERVER_PORT
+const port = process.env.INIT ? 10002 : process.env.SERVER_PORT
 app.listen(port, function () {
   system_logger().info(`1.Api server is listen port: ${port}`)
 })
