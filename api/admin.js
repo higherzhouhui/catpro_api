@@ -59,7 +59,7 @@ async function init_taskList() {
       {
         score: 2500,
         link: 'https://x.com/Portkey_DID',
-        name: 'Connect to Portkey Wallet',
+        name: 'Follow Portkey on X',
         ticket: 0,
         linkType: 'outside',
         type: 'Protkey Wallet tasks',
