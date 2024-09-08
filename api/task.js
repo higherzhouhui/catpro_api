@@ -61,7 +61,7 @@ async function handle(req, resp) {
       })
       if (!created) {
         // 钱包要执行检查逻辑
-        if (body.type == 'wallet') {
+        if (body.link == '/wallet') {
           if (!user.dataValues.wallet) {
             return errorResp(resp, 400, `Please Connect Wallet!`)
           }
