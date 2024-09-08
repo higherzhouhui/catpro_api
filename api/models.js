@@ -19,7 +19,7 @@ const User = db.sequelize.define(
     score: { type: DataTypes.DOUBLE, defaultValue: 0 },
     telegram_premium: { type: DataTypes.BIGINT, defaultValue: 0 },
     isPremium: { type: DataTypes.BOOLEAN, defaultValue: false },
-    startParam: { type: DataTypes.STRING, defaultValue: '0' },
+    startParam: { type: DataTypes.STRING, defaultValue: '' },
     photoUrl: { type: DataTypes.STRING },
     invite_friends_score: { type: DataTypes.BIGINT, defaultValue: 0 },
     invite_friends_game_score: { type: DataTypes.BIGINT, defaultValue: 0 },
