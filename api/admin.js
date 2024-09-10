@@ -98,7 +98,7 @@ async function init_taskList() {
       },
       {
         score: 2000,
-        link: 'https://discord.com/invite/EUBq3rHQhr',
+        link: 'https://discord.com/invite/bgysa9xjvD',
         name: 'Join Aelf Discord Community',
         ticket: 0,
         linkType: 'outside',
