@@ -74,7 +74,7 @@ async function init_taskList() {
       },
       {
         score: 2000,
-        link: 'https://discord.gg/zB2rJEqP',
+        link: 'https://discord.com/invite/EUBq3rHQhr',
         name: 'Join Portkey Discord Community',
         ticket: 0,
         linkType: 'outside',
@@ -98,7 +98,7 @@ async function init_taskList() {
       },
       {
         score: 2000,
-        link: 'https://discord.gg/Uwp9wvn3',
+        link: 'https://discord.com/invite/EUBq3rHQhr',
         name: 'Join Aelf Discord Community',
         ticket: 0,
         linkType: 'outside',
