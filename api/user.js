@@ -11,10 +11,11 @@ const cron = require('node-cron');
  * @summary 登录
  * @tags user
  * @description 登录接口
- * @param {string}  id.query.required  -  id
- * @param {string}  hash.query.required  -  hash
- * @param {string}  authDate.query.required  -  authDate
- * @param {string}  username.query.required  -  username
+ * @param {Object}  request.body.required  -  id
+ * @param {string}  id.request.body.id.required  -  id
+ * @param {string}  hash.request.body.hash.required  -  hash
+ * @param {string}  authDate.request.body.authDate.required  -  authDate
+ * @param {string}  username.request.body.username.required  -  username
  * @security - Authorization
  */
 async function login(req, resp) {
@@ -824,7 +825,7 @@ async function startFarming(req, resp) {
       }
       // 如果当前时间还在结束时间范围内，不允许再次开始
       if (user && user.dataValues.end_farm_time && new Date(user.dataValues.end_farm_time).getTime() > Date.now()) {
-        return successResp(resp, {}, 'farming还未结束')
+        return errorResp(resp, 400, 'farming还未结束')
       }
       const last_farming_time = new Date()
       const end_farm_time = new Date(last_farming_time.getTime() + 3 * 60 * 60 * 1000)
@@ -887,9 +888,9 @@ async function getRewardFarming(req, resp) {
       const last_farming_time = user.dataValues.last_farming_time || now
       const end_farm_time = user.dataValues.end_farm_time
       if (new Date(last_farming_time).getTime() > new Date(end_farm_time).getTime()) {
-        return successResp(resp, {}, '还没开始farming')
+        return errorResp(resp, 400, '还没开始farming')
       }
-      let score = 0.1 * Math.round(((Math.min(now.getTime(), new Date(end_farm_time).getTime()) - new Date(last_farming_time).getTime())) / 1000)
+      let score = 0.1 * Math.floor(((Math.min(now.getTime(), new Date(end_farm_time).getTime()) - new Date(last_farming_time).getTime())) / 1000)
       score = score.toFixed(1) * 1
       await Model.User.update(
         {
@@ -918,7 +919,7 @@ async function getRewardFarming(req, resp) {
             invite_friends_farm_score: score_ratio
           })
           event_data = {
-            type: 'harvest_farming',
+            type: 'harvest_farming_parent',
             from_user: req.id,
             from_username: user.username,
             to_user: parentUser.user_id,

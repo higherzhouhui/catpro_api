@@ -1,6 +1,7 @@
 const { Prize, Config } = require('./models')
 const jwt = require('jsonwebtoken')
 const SECRET_KEY = 'CAT_API'
+var log4js = require('log4js')
 
 function createToken(data) {
   const token = jwt.sign(
@@ -368,7 +369,26 @@ function isLastDay(timestamp, diff) {
   return timestamp >= startTimeStamp && timestamp < endTimeStamp;
 }
 
-/******************************Private method */
+
+// 配置日志输出
+function logger_self(type) {
+  log4js.configure({
+    appenders: {
+      out: { type: 'console' },
+      app: {
+        type: 'dateFile',
+        filename: `./logs/${type}/${type}`,
+        pattern: 'yyyy-MM-dd.log',
+        alwaysIncludePattern: true
+      }
+    },
+    categories: {
+      default: { appenders: ['out', 'app'], level: 'debug' }
+    }
+  })
+  var logger = log4js.getLogger(type)
+  return logger
+}
 
 module.exports = {
   generateOrderNumber,
@@ -389,5 +409,6 @@ module.exports = {
   expToNftImg,
   accordingIdGetTime,
   isLastDay,
-  createToken
+  createToken,
+  logger_self
 }

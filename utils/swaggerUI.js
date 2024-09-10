@@ -2,10 +2,10 @@ const expressJSDocSwagger = require('express-jsdoc-swagger');
 
 const options = {
   info: {
-    version: '2.0.0',
-    title: 'forkfrenpet接口文档',
+    version: '1.0.0',
+    title: 'CAT_API接口文档',
     description:
-      'forkfrenpet 后台api接口文档，需要手动配置token，点击Authorize'
+      'CAT_API接口文档，需要手动配置token，点击Authorize'
   },
   security: {
     Authorization: {
