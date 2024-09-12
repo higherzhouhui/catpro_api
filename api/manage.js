@@ -56,7 +56,6 @@ async function userInfo(req, resp) {
   manager_logger().info('查询个人信息')
   try {
     const token = req.id
-    const data = req.body
     const userInfo = await Model.Manager.findOne({
       where: {
         token: token
