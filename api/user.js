@@ -142,7 +142,7 @@ async function login(req, resp) {
           lastName: updateData.lastName,
         })
         const token = createToken(user.dataValues)
-        return successResp(resp, {check_date: user.check_date, token}, 'success')
+        return successResp(resp, {check_date: user.check_date, token, ...user.dataValues}, 'success')
       }
     })
   } catch (error) {
@@ -670,7 +670,7 @@ async function getUserInfo(req, resp) {
       },
     })
     if (!userInfo) {
-      return errorResp(resp, 403, `not found`)
+      return errorResp(resp, 403, `not found this user`)
     }
     return successResp(resp, userInfo.dataValues, 'success')
   } catch (error) {
