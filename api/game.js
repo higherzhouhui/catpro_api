@@ -77,9 +77,9 @@ async function end(req, resp) {
         return errorResp(resp, 403, `not found`)
       }
       const config = await Model.Config.findOne()
-
+      
       // 防刷分校验
-      const start_data = await Model.Event.findOne({
+      const start_date = await Model.Event.findOne({
         order: [['createdAt', 'desc']],
         where: {
           type: 'play_game',
@@ -97,11 +97,13 @@ async function end(req, resp) {
         },
         attributes: ['createdAt']
       })
-      const start_time = new Date(start_data.dataValues.createdAt).getTime()
-      const end_time = new Date(end_date.dataValues.createdAt).getTime()
-
-      if (start_time - end_time < 0 || req.body.score > 10000) {
-        return errorResp(resp, 400, 'Data abnormality!')
+      if (start_date && end_date) {
+        const start_time = new Date(start_date.dataValues.createdAt).getTime()
+        const end_time = new Date(end_date.dataValues.createdAt).getTime()
+  
+        if (start_time - end_time < 0 || req.body.score > 10000) {
+          return errorResp(resp, 400, 'Data abnormality!')
+        }
       }
 
       if (user) {
