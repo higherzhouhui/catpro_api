@@ -26,8 +26,8 @@ async function begin(req, resp) {
       if (user) {
         let ticket = user.dataValues.ticket
 
-        if (ticket == 0) {
-          return errorResp(resp, 400, `次数不足`)
+        if (ticket <= 0) {
+          return errorResp(resp, 400, `Insufficient number of games played`)
         }
         await user.decrement({
           ticket: 1
@@ -47,7 +47,7 @@ async function begin(req, resp) {
 
         return successResp(resp, { ticket: ticket - 1 }, 'success')
       } else {
-        return errorResp(resp, 400, '未找到该用户')
+        return errorResp(resp, 403, 'The user was not found')
       }
     })
   } catch (error) {
@@ -76,9 +76,36 @@ async function end(req, resp) {
       if (!user) {
         return errorResp(resp, 403, `not found`)
       }
+      const config = await Model.Config.findOne()
+
+      // 防刷分校验
+      const start_data = await Model.Event.findOne({
+        order: [['createdAt', 'desc']],
+        where: {
+          type: 'play_game',
+          from_user: req.id,
+          to_user: req.id
+        },
+        attributes: ['createdAt']
+      })
+      const end_date = await Model.Event.findOne({
+        order: [['createdAt', 'desc']],
+        where: {
+          type: 'play_game_reward',
+          from_user: req.id,
+          to_user: req.id
+        },
+        attributes: ['createdAt']
+      })
+      const start_time = new Date(start_data.dataValues.createdAt).getTime()
+      const end_time = new Date(end_date.dataValues.createdAt).getTime()
+
+      if (start_time - end_time < 0 || req.body.score > 10000) {
+        return errorResp(resp, 400, 'Data abnormality!')
+      }
+
       if (user) {
         const score = req.body.score
-        
         await user.increment({
           score: score,
           game_score: score
@@ -102,7 +129,6 @@ async function end(req, resp) {
             }
           })
           if (parentUser) {
-            const config = await Model.Config.findOne()
             const score_ratio = Math.floor(score * config.invite_friends_ratio  / 100)
             await parentUser.increment({
               score: score_ratio,
