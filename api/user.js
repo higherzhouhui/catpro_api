@@ -130,9 +130,9 @@ async function login(req, resp) {
         if (data.id) {
           delete data.id
         }
-        await Model.User.create(data)
+        const userInfo = await Model.User.create(data)
         const token = createToken(data)
-        return successResp(resp, { ...data, is_Tg: true, token }, 'success')
+        return successResp(resp, { ...userInfo.dataValues, token }, 'success')
       } else {
         //更新用户信息
         const updateData = data.user
