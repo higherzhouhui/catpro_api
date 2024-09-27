@@ -38,7 +38,7 @@ const rateLimiter = (req, res, next) => {
     rateLimitCache.set(ip, 1);
   } else {
     const count = rateLimitCache.get(ip);
-    if (count >= 30) { // 允许的最大请求次数
+    if (count >= 50) { // 允许的最大请求次数
       return res.status(429).send('Too Many Requests');
     }
     rateLimitCache.set(ip, count + 1);
