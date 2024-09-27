@@ -85,9 +85,11 @@ async function connectDB() {
       logger.log('4.waiting...');
       const admin = require('./admin.js')
       const result = await admin.init_baseData()
-      logger.log(`6.Init ${result}`)
-      logger.log('7.You can run pm2')
-      process.exit(0)
+      setTimeout(() => {
+        logger.log(`6.Init ${result}`)
+        logger.log('7.You can run pm2')
+        process.exit(0)
+      }, 2000);
     } else {
       // await sequelize.sync({ force: false }); // 将 force 设置为 true 将会删除并重新创建所有表
       await sequelize.sync({ alter: true }); // 将 force 设置为 true 将会删除并重新创建所有表

@@ -1,7 +1,6 @@
 var log4js = require('log4js')
 const { errorResp, successResp } = require('./common')
 const Model = require('./models')
-const utils = require('./utils')
 const dataBase = require('./database')
 
 /**
