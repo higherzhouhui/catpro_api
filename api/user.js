@@ -487,11 +487,20 @@ async function getUserList(req, resp) {
     //   type: dataBase.QueryTypes.SELECT
     // })
     const list = await Model.User.findAndCountAll({
-      order: [['score', 'desc']],
+      order: [['score', 'desc'], ['createdAt', 'asc']],
       offset: (page - 1) * 20,
       limit: 20 * 1,
       attributes: ['username', 'score']
     })
+    const userInfo = await Model.User.findOne({
+      where: {
+        user_id: req.id
+      }
+    })
+    if (!userInfo) {
+      return errorResp(resp, 403, 'not found this user')
+    }
+
     const sql = `SELECT 
         user_id,
         score,
@@ -500,11 +509,24 @@ async function getUserList(req, resp) {
             user u
         WHERE 
             user_id = ${req.id};`;
-    const rank = await dataBase.sequelize.query(sql, {
+    const ranking = await dataBase.sequelize.query(sql, {
       type: dataBase.QueryTypes.SELECT
     })
-
-    return successResp(resp, { ...list, rank: rank[0].ranking }, 'success')
+    const same_score = await Model.User.findAll({
+      order: [['createdAt', 'asc']],
+      where: {
+        score: {
+          [dataBase.Op.eq]: userInfo.score
+        }
+      }
+    })
+    let rank = ranking[0].ranking
+    same_score.forEach((item, index) => {
+      if (item.dataValues.user_id == req.id) {
+        rank += index
+      }
+    })
+    return successResp(resp, { ...list, rank: rank }, 'success')
   } catch (error) {
     user_logger().error('获取用户列表失败', error)
     console.error(`${error}`)
