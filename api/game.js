@@ -5,13 +5,13 @@ const dataBase = require('./database')
 
 /**
  * get /api/game/begin
- * @summary 开始游戏
+ * @summary Start the game
  * @tags game
- * @description 开始游戏接口
+ * @description Start game interface
  * @security - Authorization
  */
 async function begin(req, resp) {
-  game_logger().info('开始玩游戏')
+  game_logger().info('Start playing the game')
   try {
     await dataBase.sequelize.transaction(async (t) => {
       let user = await Model.User.findOne({
@@ -50,7 +50,7 @@ async function begin(req, resp) {
       }
     })
   } catch (error) {
-    game_logger().error('开始玩游戏失败', error)
+    game_logger().error('Failed to start playing the game', error)
     console.error(`${error}`)
     return errorResp(resp, 400, `${error}`)
   }
@@ -58,13 +58,13 @@ async function begin(req, resp) {
 
 /**
  * post /api/game/end
- * @summary 结算游戏
+ * @summary Settle the game
  * @tags game
- * @description 结算游戏接口
+ * @description Settle game interface
  * @security - Authorization
  */
 async function end(req, resp) {
-  game_logger().info('结算游戏', req.id)
+  game_logger().info('Settle game', req.id)
   try {
     await dataBase.sequelize.transaction(async (t) => {
       let user = await Model.User.findOne({
@@ -77,7 +77,7 @@ async function end(req, resp) {
       }
       const config = await Model.Config.findOne()
       
-      // 防刷分校验
+      // Anti-cheat score verification
       const start_date = await Model.Event.findOne({
         order: [['createdAt', 'desc']],
         where: {
@@ -150,18 +150,18 @@ async function end(req, resp) {
         }
         return successResp(resp, { score: user.score + score, game_score: user.game_score + score }, 'success')
       } else {
-        return errorResp(resp, 400, '未找到该用户')
+        return errorResp(resp, 400, 'User not found')
       }
     })
   } catch (error) {
-    game_logger().error('结算游戏失败', error)
+    game_logger().error('Failed to settle the game', error)
     console.error(`${error}`)
     return errorResp(resp, 400, `${error}`)
   }
 }
 
 //----------------------------- private method --------------
-// 配置日志输出
+// Configure log output
 function game_logger() {
   log4js.configure({
     appenders: {

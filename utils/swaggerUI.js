@@ -3,9 +3,9 @@ const expressJSDocSwagger = require('express-jsdoc-swagger');
 const options = {
   info: {
     version: '1.0.0',
-    title: 'CAT_API接口文档',
+    title: 'CAT_API API documentation',
     description:
-      'CAT_API接口文档，需要手动配置token，点击Authorize'
+      'CAT_API API documentation requires manual token configuration，Click Authorize'
   },
   security: {
     Authorization: {

@@ -6,7 +6,7 @@ const game = require('./game.js')
 const checkInReward = require('./reward.js')
 const task = require('./task.js')
 
-// 用户路由
+// User routing
 router.post('/user/login', user.login)
 router.post('/user/h5PcLogin', user.h5PcLogin)
 router.post('/user/update', user.updateInfo)
@@ -26,16 +26,16 @@ router.get('/user/getMyScoreHistory', user.getMyScoreHistory)
 router.get('/game/begin', game.begin)
 router.post('/game/end', game.end)
 
-// 签到奖励列表
+// Check-in reward list
 router.get('/checkInReward/list', checkInReward.list)
-// 获取任务列表
+// Get task list
 router.get('/task/list', task.list)
 router.post('/task/handle', task.handle)
 
 router.get('/system/getConfig', manage.getConfigInfo)
 // router.get('/system/resetTicket', user.resetTicketInfo)
 
-// 管理后台接口
+// Admin panel interface
 router.post('/dogAdmin/login', manage.login)
 router.get('/dogAdmin/userInfo', manage.userInfo)
 router.get('/dogAdmin/getUserList', manage.getUserList)

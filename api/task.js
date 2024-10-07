@@ -4,23 +4,23 @@ const dataBase = require('./database')
 
 /**
  * post /api/task/list
- * @summary 获取任务以及完成情况
+ * @summary Get tasks and completion status
  * @tags checkInReward
- * @description 获取任务以及完成情况
+ * @description Get tasks and completion status
  * @security - Authorization
  */
 
 async function list(req, resp) {
   try {
     const id = req.id
-    task_logger().info(`用户:${id}获取任务以及完成情况`)
+    task_logger().info(`User:${id}Get tasks and completion status`)
 
     const sql = `SELECT t.*, ut.status FROM taskList t LEFT JOIN UserTask ut ON t.id = ut.task_id AND ut.user_id=${id} ORDER BY t.id`
     let list = await dataBase.sequelize.query(sql, { type: dataBase.QueryTypes.SELECT })
 
     return successResp(resp, list, 'success')
   } catch (error) {
-    task_logger().error(`获取任务情况失败：${error}`)
+    task_logger().error(`Failed to retrieve task status：${error}`)
     return errorResp(resp, 400, `${error}`)
   }
 }
@@ -28,9 +28,9 @@ async function list(req, resp) {
 
 /**
  * post /api/task/handle
- * @summary 去完成任务
+ * @summary Go complete the task
  * @tags handle
- * @description 去完成任务
+ * @description Go complete the task
  * @security - Authorization
  */
 
@@ -38,7 +38,7 @@ async function handle(req, resp) {
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const id = req.id
-      task_logger().info(`用户:${id}去完成任务,${JSON.stringify(req.body)}`)
+      task_logger().info(`User:${id}Go complete the task,${JSON.stringify(req.body)}`)
       const body = req.body
       const user = await Model.User.findOne({
         where: {
@@ -46,7 +46,7 @@ async function handle(req, resp) {
         }
       })
       if (!user) {
-        return errorResp(resp, 400, '未找到该用户')
+        return errorResp(resp, 400, 'User not found')
       }
       const [taskItem, created] = await Model.UserTask.findOrCreate({
         where: {
@@ -60,7 +60,7 @@ async function handle(req, resp) {
         }
       })
       if (!created) {
-        // 钱包要执行检查逻辑
+        // The wallet needs to execute check logic
         if (body.link == '/wallet') {
           if (!user.dataValues.wallet) {
             return errorResp(resp, 400, `Please Connect Wallet!`)
@@ -96,7 +96,7 @@ async function handle(req, resp) {
       return successResp(resp, taskItem, 'success')
     })
   } catch (error) {
-    task_logger().error(`去完成任务：${error}`)
+    task_logger().error(`Go complete the task：${error}`)
     return errorResp(resp, 400, `${error}`)
   }
 }
@@ -104,7 +104,7 @@ async function handle(req, resp) {
 
 
 // ************************** Private Method ************************
-// 配置日志输出
+// Configure log output
 var log4js = require('log4js')
 const { where } = require('sequelize')
 

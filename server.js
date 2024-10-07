@@ -21,24 +21,24 @@ app.use(express.urlencoded({ limit: '2mb', extended: false }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-// 解析formdata数据
+// Parse formdata data
 app.use(multipart())
 
-// 存储IP和请求时间的缓存
+// Cache to store IP and request time
 const rateLimitCache = new Map();
 
-// 清理旧的缓存记录的定时器
+// Timer for cleaning old cache records
 setInterval(() => {
   rateLimitCache.clear();
-}, 20000); // 每20秒清理一次缓存
-// 请求频率限制中间件
+}, 20000); // Clear the cache every 20 seconds
+// Request rate limiting middleware
 const rateLimiter = (req, res, next) => {
   let ip = req.headers['authorization'] || req.body.id
   if (!rateLimitCache.has(ip)) {
     rateLimitCache.set(ip, 1);
   } else {
     const count = rateLimitCache.get(ip);
-    if (count >= 50) { // 允许的最大请求次数
+    if (count >= 50) { // Maximum allowed request count
       return res.status(429).send('Too Many Requests');
     }
     rateLimitCache.set(ip, count + 1);
@@ -49,10 +49,10 @@ const rateLimiter = (req, res, next) => {
 app.use(rateLimiter);
 
 
-// 跨域配置
+// Cross-origin configuration
 app.use(cors())
 
-// 定义不需要校验token的白名单接口
+// Define the whitelist interfaces that do not require token verification
 const white_list = [
   '/api/user/login',
   '/api/user/h5PcLogin',
@@ -64,8 +64,8 @@ const white_list = [
   '/api/system/getFfpAndEthPrice',
 ]
 app.use((req, resp, next) => {
-  const path = req.path // 获取请求的路径
-  // 检查路径是否在白名单中
+  const path = req.path // Get the request path
+  // Check if the path is in the whitelist
   if (
     white_list.some((item) => {
       if (typeof item === 'string') {

@@ -27,13 +27,13 @@ function middleware_logger() {
 function logger(req, resp, next) {
   if (req.method == 'GET') {
     middleware_logger().info(
-      `用户: ${req.username} id: ${req.id}-GET请求url: ${req.url} -请求参数：${JSON.stringify(
+      `User: ${req.username} id: ${req.id}-GET Request url: ${req.url} -Request parameters：${JSON.stringify(
         req.query
       )}`
     )
   } else if (req.method == 'POST') {
     middleware_logger().info(
-      `用户: ${req.username} id: ${req.id}-POST请求url: ${req.url} -请求body: ${JSON.stringify(
+      `User: ${req.username} id: ${req.id}-POST Request url: ${req.url} -Request body: ${JSON.stringify(
         req.body
       )}`
     )

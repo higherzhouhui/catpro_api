@@ -1,33 +1,33 @@
-## 环境
+## Environment
 ### Nodejs >= 18.0
 ### Redis  >= 6
 ### Mysql >= 5.744
 
-## 连接数据库
+## Connect to the database
 ## mysql -uroot -p
 
-## 创建数据库，名称和密码在env文件中
+## Create a database, with the name and password in the `.env` file
 
 ### create database cat_db;
 
-## 安装依赖
+## Install dependencies
 ### yarn 
 ### or npm i
 ### or pnpm i
 
 
-## 初始化数据库（该命令会清空所有数据表并插入基本配置数据，一般是第一次启动项目或者需要清空数据的时候执行，其他情况可以跳过该步骤）
+## Initialize the database (this command will clear all tables and insert basic configuration data. It is usually executed during the first startup of the project or when data needs to be cleared; otherwise, this step can be skipped)
 ### npm run init
 
-## 本地调试启动
-### npm run dev (使用.env.dev配置)
-### npm run start （使用.env配置）
+## Local debugging startup
+### npm run dev (Use the `.env.dev` configuration)
+### npm run start （Use the `.env` configuration）
 
-## 服务器启动，NODEJS进程守卫，使用pm2;npm i pm2 -g
-## 启动 或者 直接 pm2 start server.js --name 'cat_api v1'
+## Start the server with Node.js process management using PM2; install it globally with the command: `npm i pm2 -g`
+## Start the server, or directly use the command: `pm2 start server.js --name 'cat_api v1'`
 
 ### npm run pm2
 
-## 接口文档地址
+## API documentation URL
 
 ### localhost:8086/api-docs

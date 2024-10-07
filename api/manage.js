@@ -5,11 +5,11 @@ const utils = require('./utils')
 const dataBase = require('./database')
 const moment = require('moment')
 async function example(req, resp) {
-  manager_logger().info('本次迁移成功:')
+  manager_logger().info('The migration was successful:')
   try {
 
   } catch (error) {
-    manager_logger().info('本次迁移失败:', error)
+    manager_logger().info('The migration failed:', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -17,10 +17,10 @@ async function example(req, resp) {
 
 /**
  * 
- * 登录
+ * Log in
  */
 async function login(req, resp) {
-  manager_logger().info('发起登录')
+  manager_logger().info('Initiate login')
   try {
     const data = req.body
     const userInfo = await Model.Manager.findOne({
@@ -29,7 +29,7 @@ async function login(req, resp) {
       }
     })
     if (!userInfo) {
-      return errorResp(resp, 400, `该账号不存在！`)
+      return errorResp(resp, 400, `This account does not exist!`)
     }
     if (userInfo.dataValues.password == data.password) {
       let token = new Date().getTime() + 15 * 24 * 60 * 60 * 1000
@@ -38,22 +38,22 @@ async function login(req, resp) {
         { where: { id: userInfo.id } }
       )
       token = utils.createToken({username: userInfo.dataValues.account, user_id: token})
-      return successResp(resp, { ...userInfo.dataValues, token }, '登录成功！')
+      return successResp(resp, { ...userInfo.dataValues, token }, 'Login successful!')
     } else {
-      return errorResp(resp, 400, `密码错误！`)
+      return errorResp(resp, 400, `Incorrect password!`)
     }
   } catch (error) {
-    manager_logger().info('登录失败', error)
+    manager_logger().info('Login failed', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
 }
 /**
  * 
- * 获取个人信息
+ * Get personal information
  */
 async function userInfo(req, resp) {
-  manager_logger().info('查询个人信息')
+  manager_logger().info('Query personal information')
   try {
     const token = req.id
     const userInfo = await Model.Manager.findOne({
@@ -62,11 +62,11 @@ async function userInfo(req, resp) {
       }
     })
     if (!userInfo) {
-      return errorResp(resp, 400, `登录过期！`)
+      return errorResp(resp, 400, `Login expired!`)
     }
-    return successResp(resp, userInfo.dataValues, '登录成功！')
+    return successResp(resp, userInfo.dataValues, 'Login successful!')
   } catch (error) {
-    manager_logger().info('查询个人信息失败', error)
+    manager_logger().info('Failed to retrieve personal information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -74,10 +74,10 @@ async function userInfo(req, resp) {
 
 /**
  * 
- * 查看会员列表
+ * View member list
  */
 async function getUserList(req, resp) {
-  manager_logger().info('查看会员列表')
+  manager_logger().info('View member list')
   try {
     const data = req.query
     let where = {}
@@ -111,9 +111,9 @@ async function getUserList(req, resp) {
     if (data.is_check) {
       let flag = data.is_check == 'true' ? true : false
       const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
+      todayStart.setHours(0, 0, 0, 0); // Set today's start time
       const todayEnd = new Date(todayStart);
-      todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
+      todayEnd.setDate(todayEnd.getDate() + 1); // Set today's end time
       if (flag) {
         where.check_date = moment().utc().format('MM-DD')
       } else {
@@ -137,9 +137,9 @@ async function getUserList(req, resp) {
         is_really: true
       }
     })
-    return successResp(resp, { ...list, total, total_really }, '登录成功！')
+    return successResp(resp, { ...list, total, total_really }, 'Login successful!')
   } catch (error) {
-    manager_logger().info('查看会员列表失败', error)
+    manager_logger().info('Failed to view member list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -147,10 +147,10 @@ async function getUserList(req, resp) {
 
 /**
  * 
- * 查看下级会员列表
+ * View subordinate member list
  */
 async function getUserInviteList(req, resp) {
-  manager_logger().info('查看首页信息')
+  manager_logger().info('View homepage information')
   try {
     const data = req.query
     const where = {}
@@ -162,9 +162,9 @@ async function getUserInviteList(req, resp) {
       where,
     })
     const total = await Model.User.count()
-    return successResp(resp, { ...list, total }, '成功！')
+    return successResp(resp, { ...list, total }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看首页信息失败', error)
+    manager_logger().info('Failed to view homepage information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -172,15 +172,15 @@ async function getUserInviteList(req, resp) {
 
 /**
  * 
- * 查看首页信息
+ * View homepage information
  */
 async function getHomeInfo(req, resp) {
-  manager_logger().info('查看首页信息')
+  manager_logger().info('View homepage information')
   try {
     const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
+    todayStart.setHours(0, 0, 0, 0); // Set today's start time
     const todayEnd = new Date(todayStart);
-    todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
+    todayEnd.setDate(todayEnd.getDate() + 1); // Set today's end time
 
     const totalUser = await Model.User.count()
     const totalScore = await Model.User.sum('score')
@@ -232,9 +232,9 @@ async function getHomeInfo(req, resp) {
         check_date: moment().format('MM-DD')
       }
     })
-    // 获取n天前的日期
+    // Get the date from **n** days ago
     const startDate = new Date()
-    startDate.setHours(23, 59, 59, 0); // 设置今天的结束时间
+    startDate.setHours(23, 59, 59, 0); // Set today's end time
 
 
     const getList = async (day, table, type) => {
@@ -313,7 +313,7 @@ async function getHomeInfo(req, resp) {
     return successResp(resp, resData, 'success')
 
   } catch (error) {
-    manager_logger().info('查看首页信息', error)
+    manager_logger().info('View homepage information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -321,10 +321,10 @@ async function getHomeInfo(req, resp) {
 
 /**
  * 
- * 查看管理员列表
+ * View administrator list
  */
 async function getAdminList(req, resp) {
-  manager_logger().info('查看管理员列表')
+  manager_logger().info('View administrator list')
   try {
     const data = req.query
     const where = {}
@@ -336,9 +336,9 @@ async function getAdminList(req, resp) {
       where,
     })
     const total = await Model.Manager.count()
-    return successResp(resp, { ...list, total }, '成功！')
+    return successResp(resp, { ...list, total }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看管理员列表失败', error)
+    manager_logger().info('Failed to view administrator list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -347,10 +347,10 @@ async function getAdminList(req, resp) {
 
 /**
  * 
- * 查看道具列表
+ * View item list
  */
 async function getPropsList(req, resp) {
-  manager_logger().info('查看道具列表')
+  manager_logger().info('View item list')
   try {
     const data = req.query
     const where = {}
@@ -375,10 +375,10 @@ async function getPropsList(req, resp) {
       item.price = await utils.usdt_ffp(item.usdt)
     })
     setTimeout(() => {
-      return successResp(resp, { ...list }, '成功！')
+      return successResp(resp, { ...list }, 'Successful!')
     }, 100);
   } catch (error) {
-    manager_logger().info('查看道具列表失败', error)
+    manager_logger().info('Failed to view item list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -387,10 +387,10 @@ async function getPropsList(req, resp) {
 
 /**
  * 
- * 查看事件
+ * View events
  */
 async function getEventList(req, resp) {
-  manager_logger().info('查看事件')
+  manager_logger().info('View events')
   try {
     const data = req.query
     const where = {}
@@ -425,9 +425,9 @@ async function getEventList(req, resp) {
     })
 
     const total = await Model.Event.count()
-    return successResp(resp, { ...list, total }, '成功！')
+    return successResp(resp, { ...list, total }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看事件失败', error)
+    manager_logger().info('Failed to view events', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -436,15 +436,15 @@ async function getEventList(req, resp) {
 
 /**
  * 
- * 查看系统配置
+ * View system configuration
  */
 async function getConfigInfo(req, resp) {
-  manager_logger().info('查看系统配置')
+  manager_logger().info('View system configuration')
   try {
     const info = await Model.Config.findOne()
-    return successResp(resp, info.dataValues, '成功！')
+    return successResp(resp, info.dataValues, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看系统配置失败', error)
+    manager_logger().info('Failed to view system configuration', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -453,15 +453,15 @@ async function getConfigInfo(req, resp) {
 
 /**
  * 
- * 查看任务列表
+ * View task list
  */
 async function getTaskList(req, resp) {
-  manager_logger().info('查看任务列表')
+  manager_logger().info('View task list')
   try {
     const list = await Model.TaskList.findAndCountAll({})
     return successResp(resp, list, 'success')
   } catch (error) {
-    manager_logger().info('查看任务列表失败', error)
+    manager_logger().info('Failed to view task list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -471,10 +471,10 @@ async function getTaskList(req, resp) {
 
 /**
  * 
- * 查看钱包列表
+ * View wallet list
  */
 async function getWalletList(req, resp) {
-  manager_logger().info('查看钱包列表')
+  manager_logger().info('View wallet list')
   try {
     const data = req.query
     let sql = ''
@@ -512,9 +512,9 @@ async function getWalletList(req, resp) {
     const totalStr = `SELECT COUNT(*) as total FROM wallet p JOIN user u ON p.uid = u.id;`
     const total = await dataBase.sequelize.query(totalStr, { type: dataBase.QueryTypes.SELECT })
 
-    return successResp(resp, { rows: list, total: total[0].total, count: count[0].count }, '成功！')
+    return successResp(resp, { rows: list, total: total[0].total, count: count[0].count }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看钱包列表失败', error)
+    manager_logger().info('Failed to view wallet list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -523,10 +523,10 @@ async function getWalletList(req, resp) {
 
 /**
  * 
- * 查看等级
+ * View level
  */
 async function getExpList(req, resp) {
-  manager_logger().info('查看等级')
+  manager_logger().info('View level')
   try {
     const data = req.query
     const where = {}
@@ -539,19 +539,19 @@ async function getExpList(req, resp) {
       where,
     })
     const total = await Model.CheckInReward.count()
-    return successResp(resp, { ...list, total }, '成功！')
+    return successResp(resp, { ...list, total }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看等级失败', error)
+    manager_logger().info('Failed to view level', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
 }
 /**
  * 
- * 道具列表
+ * Item list
  */
 async function getPropsRecordList(req, resp) {
-  manager_logger().info('道具列表')
+  manager_logger().info('Item list')
   try {
     const data = req.query
     let sql = 'WHERE props_amount > 0 '
@@ -598,10 +598,10 @@ async function getPropsRecordList(req, resp) {
     const totalStr = `SELECT COUNT(*) as total FROM props_record p JOIN user u ON p.uid = u.id WHERE props_amount > 0;`
     const total = await dataBase.sequelize.query(totalStr, { type: dataBase.QueryTypes.SELECT })
 
-    return successResp(resp, { rows: list, total: total[0].total, count: count[0].count }, '成功！')
+    return successResp(resp, { rows: list, total: total[0].total, count: count[0].count }, 'Successful!')
 
   } catch (error) {
-    manager_logger().info('道具列表失败', error)
+    manager_logger().info('Failed to view item list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -610,10 +610,10 @@ async function getPropsRecordList(req, resp) {
 
 /**
  * 
- * 查看奖品列表
+ * View prize list
  */
 async function getPrizeList(req, resp) {
-  manager_logger().info('查看奖品列表')
+  manager_logger().info('View prize list')
   try {
     const data = req.query
     const where = {}
@@ -626,9 +626,9 @@ async function getPrizeList(req, resp) {
       where,
     })
     const total = await Model.Prize.count()
-    return successResp(resp, { ...list, total }, '成功！')
+    return successResp(resp, { ...list, total }, 'Successful!')
   } catch (error) {
-    manager_logger().info('查看奖品列表失败', error)
+    manager_logger().info('Failed to view prize list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -636,10 +636,10 @@ async function getPrizeList(req, resp) {
 
 /**
  * 
- * 更新会员信息
+ * Update member information
  */
 async function updateUserInfo(req, resp) {
-  manager_logger().info('更新会员信息')
+  manager_logger().info('Update member information')
   try {
     const data = req.body
     const oldUser = await Model.User.findByPk(data.id)
@@ -659,7 +659,7 @@ async function updateUserInfo(req, resp) {
         from_username: 'system',
         to_username: data.username,
         score: data.score - oldUser.score,
-        desc: `系统操作score:${data.score - oldUser.score}`
+        desc: `System operation score:${data.score - oldUser.score}`
       })
     }
     if (data.ticket !== oldUser.ticket) {
@@ -670,7 +670,7 @@ async function updateUserInfo(req, resp) {
         from_username: 'system',
         to_username: data.username,
         ticket: data.ticket - oldUser.ticket,
-        desc: `系统操作ticket:${data.ticket - oldUser.ticket}`
+        desc: `System operation ticket:${data.ticket - oldUser.ticket}`
       })
     }
     if (data.startParam !== oldUser.startParam) {
@@ -681,12 +681,12 @@ async function updateUserInfo(req, resp) {
         from_username: 'system',
         to_username: data.username,
         score: 0,
-        desc: `系统操作:更改${data.username}的上级ID为${data.startParam}`
+        desc: `System operation:modify ${data.username} superior ID is ${data.startParam}`
       })
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新会员信息', error)
+    manager_logger().info('Update member information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -694,10 +694,10 @@ async function updateUserInfo(req, resp) {
 
 /**
  * 
- * 更新道具信息
+ * Update item information
  */
 async function updatePropsInfo(req, resp) {
-  manager_logger().info('更新道具信息')
+  manager_logger().info('Update item information')
   try {
     let data = req.body
 
@@ -715,9 +715,9 @@ async function updatePropsInfo(req, resp) {
     } else {
       await Model.Props.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新道具信息失败', error)
+    manager_logger().info('Failed to update item information.', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -725,10 +725,10 @@ async function updatePropsInfo(req, resp) {
 
 /**
  * 
- * 更新事件
+ * Update event
  */
 async function updateEventInfo(req, resp) {
-  manager_logger().info('更新事件信息')
+  manager_logger().info('Update event information.')
   try {
     let data = req.body
 
@@ -746,9 +746,9 @@ async function updateEventInfo(req, resp) {
     } else {
       await Model.Event.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新事件信息失败', error)
+    manager_logger().info('Failed to update event information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -757,10 +757,10 @@ async function updateEventInfo(req, resp) {
 
 /**
  * 
- * 更新事件
+ * Update event
  */
 async function updateConfigInfo(req, resp) {
-  manager_logger().info('更新事件信息')
+  manager_logger().info('Update event information')
   try {
     let data = req.body
 
@@ -778,9 +778,9 @@ async function updateConfigInfo(req, resp) {
     } else {
       await Model.Config.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新事件信息失败', error)
+    manager_logger().info('Failed to update event information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -788,10 +788,10 @@ async function updateConfigInfo(req, resp) {
 
 /**
  * 
- * 更新管理员信息
+ * Update administrator information
  */
 async function updateAdminInfo(req, resp) {
-  manager_logger().info('更新管理员信息信息')
+  manager_logger().info('Update administrator information')
   try {
     let data = req.body
 
@@ -809,9 +809,9 @@ async function updateAdminInfo(req, resp) {
     } else {
       await Model.Manager.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新管理员信息信息失败', error)
+    manager_logger().info('Failed to update administrator information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -819,10 +819,10 @@ async function updateAdminInfo(req, resp) {
 
 /**
  * 
- * 更新奖品
+ * Update prize
  */
 async function updatePrizeInfo(req, resp) {
-  manager_logger().info('更新奖品信息')
+  manager_logger().info('Update prize information')
   try {
     let data = req.body
 
@@ -840,9 +840,9 @@ async function updatePrizeInfo(req, resp) {
     } else {
       await Model.Prize.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新奖品信息失败', error)
+    manager_logger().info('Failed to update prize information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -850,10 +850,10 @@ async function updatePrizeInfo(req, resp) {
 
 /**
  * 
- * 更新等级
+ * Update level
  */
 async function updateExpList(req, resp) {
-  manager_logger().info('更新等级信息')
+  manager_logger().info('Update level information')
   try {
     let data = req.body
 
@@ -871,9 +871,9 @@ async function updateExpList(req, resp) {
     } else {
       await Model.CheckInReward.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新等级信息失败', error)
+    manager_logger().info('Failed to update level information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -881,10 +881,10 @@ async function updateExpList(req, resp) {
 
 /**
  * 
- * 更新用户道具列表
+ * Update user item list
  */
 async function updateUserPropsList(req, resp) {
-  manager_logger().info('更新用户道具列表信息')
+  manager_logger().info('Update user item list information')
   try {
     let data = req.body
 
@@ -902,9 +902,9 @@ async function updateUserPropsList(req, resp) {
     } else {
       await Model.PropsRecord.create(data)
     }
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新用户道具列表信息失败', error)
+    manager_logger().info('Failed to update user item list information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -912,10 +912,10 @@ async function updateUserPropsList(req, resp) {
 
 /**
  * 
- * 更新或创建任务
+ * Update or create task
  */
 async function updateTaskInfo(req, resp) {
-  manager_logger().info('更新或创建任务')
+  manager_logger().info('Update or create task')
   try {
     const data = req.body
     if (data.id) {
@@ -928,9 +928,9 @@ async function updateTaskInfo(req, resp) {
       await Model.TaskList.create(data)
     }
 
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新或创建任务失败', error)
+    manager_logger().info('Failed to update or create task', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -938,10 +938,10 @@ async function updateTaskInfo(req, resp) {
 
 /**
  * 
- * 删除会员
+ * Delete member
  */
 async function removeUser(req, resp) {
-  manager_logger().info('更新会员信息')
+  manager_logger().info('Update member information')
   try {
     const data = req.body
     await Model.User.destroy(
@@ -951,9 +951,9 @@ async function removeUser(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新会员信息', error)
+    manager_logger().info('Update member information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -961,10 +961,10 @@ async function removeUser(req, resp) {
 
 /**
  * 
- * 删除钱包
+ * Delete wallet
  */
 async function removeWallet(req, resp) {
-  manager_logger().info('更新钱包信息')
+  manager_logger().info('Update wallet information')
   try {
     const data = req.body
     await Model.Wallet.destroy(
@@ -974,9 +974,9 @@ async function removeWallet(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('更新钱包信息', error)
+    manager_logger().info('Update wallet information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -985,10 +985,10 @@ async function removeWallet(req, resp) {
 
 /**
  * 
- * 删除道具
+ * Delete item
  */
 async function removeProps(req, resp) {
-  manager_logger().info('删除道具信息')
+  manager_logger().info('Delete item information')
   try {
     const data = req.body
     await Model.Props.destroy(
@@ -998,9 +998,9 @@ async function removeProps(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('删除道具信息失败', error)
+    manager_logger().info('Failed to delete item information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1009,10 +1009,10 @@ async function removeProps(req, resp) {
 
 /**
  * 
- * 删除操作记录
+ * Delete operation record
  */
 async function removeEvent(req, resp) {
-  manager_logger().info('删除操作记录')
+  manager_logger().info('Delete operation record')
   try {
     const data = req.body
     await Model.Event.destroy(
@@ -1022,9 +1022,9 @@ async function removeEvent(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('删除操作记录失败', error)
+    manager_logger().info('Failed to delete operation record', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1033,10 +1033,10 @@ async function removeEvent(req, resp) {
 
 /**
  * 
- * 删除管理员
+ * Delete administrator
  */
 async function removeAdminInfo(req, resp) {
-  manager_logger().info('删除管理员')
+  manager_logger().info('Delete administrator')
   try {
     const data = req.body
     await Model.Manager.destroy(
@@ -1046,9 +1046,9 @@ async function removeAdminInfo(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('删除管理员失败', error)
+    manager_logger().info('Failed to delete the administrator', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1057,10 +1057,10 @@ async function removeAdminInfo(req, resp) {
 
 /**
  * 
- * 删除任务
+ * Delete task
  */
 async function removeTaskList(req, resp) {
-  manager_logger().info('删除任务')
+  manager_logger().info('Delete task')
   try {
     const data = req.body
     await Model.TaskList.destroy(
@@ -1070,9 +1070,9 @@ async function removeTaskList(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('删除任务失败', error)
+    manager_logger().info('Failed to delete the task', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1081,10 +1081,10 @@ async function removeTaskList(req, resp) {
 
 /**
  * 
- * 删除奖品
+ * Delete prize
  */
 async function removePrize(req, resp) {
-  manager_logger().info('删除奖品')
+  manager_logger().info('Delete prize')
   try {
     const data = req.body
     await Model.Prize.destroy(
@@ -1094,9 +1094,9 @@ async function removePrize(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Successful!')
   } catch (error) {
-    manager_logger().info('删除奖品失败', error)
+    manager_logger().info('Failed to delete the prize', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1104,10 +1104,10 @@ async function removePrize(req, resp) {
 
 /**
  * 
- * 删除等级
+ * Delete level
  */
 async function removeLevel(req, resp) {
-  manager_logger().info('删除等级')
+  manager_logger().info('Delete level')
   try {
     const data = req.body
     await Model.CheckInReward.destroy(
@@ -1117,9 +1117,9 @@ async function removeLevel(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Success！')
   } catch (error) {
-    manager_logger().info('删除等级失败', error)
+    manager_logger().info('Failed to delete the level', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -1127,10 +1127,10 @@ async function removeLevel(req, resp) {
 
 /**
  * 
- * 删除用户道具
+ * Delete user props
  */
 async function removeUserProps(req, resp) {
-  manager_logger().info('删除用户道具')
+  manager_logger().info('Delete user props')
   try {
     const data = req.body
     await Model.PropsRecord.destroy(
@@ -1140,15 +1140,15 @@ async function removeUserProps(req, resp) {
         }
       }
     )
-    return successResp(resp, {}, '成功！')
+    return successResp(resp, {}, 'Success!')
   } catch (error) {
-    manager_logger().info('删除用户道具失败', error)
+    manager_logger().info('Failed to delete user item', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
 }
 //----------------------------- private method --------------
-// 配置日志输出
+// Configure log output
 function manager_logger() {
   log4js.configure({
     appenders: {

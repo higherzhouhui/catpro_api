@@ -8,9 +8,9 @@ const cron = require('node-cron');
 
 /**
  * post /api/user/login
- * @summary 登录
+ * @summary Log in
  * @tags user
- * @description 登录接口
+ * @description Login interface
  * @param {Object}  request.body.required  -  id
  * @param {string}  id.request.body.id.required  -  id
  * @param {string}  hash.request.body.hash.required  -  hash
@@ -19,7 +19,7 @@ const cron = require('node-cron');
  * @security - Authorization
  */
 async function login(req, resp) {
-  user_logger().info('发起登录', req.body)
+  user_logger().info('Initiate login', req.body)
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
@@ -27,7 +27,7 @@ async function login(req, resp) {
         data.username = data.firstName + data.lastName
       }
       if (!(data.hash && data.id && data.username && data.authDate && data.wallet)) {
-        user_logger().error('登录失败', '数据格式异常')
+        user_logger().error('Login failed', 'Data format exception')
         return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
@@ -35,14 +35,14 @@ async function login(req, resp) {
           wallet: data.wallet
         }
       })
-      // 找到当前用户，如果存在则返回其数据，如果不存在则新创建
+      // Find the current user; if they exist, return their data; if not, create a new one
       if (!user) {
         const info = await Model.Config.findOne()
         data.user_id = data.id
-        // 初始化积分
+        // Initialize points
         data.score = info.invite_normalAccount_score
         data.ticket = info.ticket
-        // 如果是会员则额外增加
+        // If they are a member, add extra points
         if (data.isPremium) {
           data.score += info.invite_premiumAccount_score
           data.ticket += info.invite_premiumAccount_ticket
@@ -62,7 +62,7 @@ async function login(req, resp) {
         await Model.Event.create(event_data)
 
         try {
-          // 给上级用户加积分
+          // Add points to the superior user
           if (data.startParam) {
             let isShareGame = data.startParam.includes('SHAREGAME')
             let inviteId;
@@ -81,7 +81,7 @@ async function login(req, resp) {
               })
               let increment_score = info.invite_normalAccount_score
               let increment_ticket = info.invite_normalAccount_ticket
-              // 如果是会员的话积分更多
+              // If they are a member, they receive more points
               if (data.isPremium) {
                 increment_score = info.invite_premiumAccount_score
                 increment_ticket = info.invite_premiumAccount_ticket
@@ -112,7 +112,7 @@ async function login(req, resp) {
                   desc: `${parentUser.username} invite ${data.username} join us!`
                 }
                 await Model.Event.create(event_data)
-                // 顺序不能变
+                // The order cannot be changed
                 if (isShareGame) {
                   increment_score += 50
                 }
@@ -125,7 +125,7 @@ async function login(req, resp) {
             }
           }
         } catch (error) {
-          user_logger().info('执行找父元素失败', error)
+          user_logger().info('Failed to execute find parent element', error)
         }
         if (data.id) {
           delete data.id
@@ -134,7 +134,7 @@ async function login(req, resp) {
         const token = createToken(data)
         return successResp(resp, { ...user.dataValues, token }, 'success')
       } else {
-        //更新用户信息
+        //Update user information
         const updateData = data.user
         await user.update({
           username: updateData.username,
@@ -146,8 +146,8 @@ async function login(req, resp) {
       }
     })
   } catch (error) {
-    user_logger().error('登录失败:', error)
-    console.error(`登录失败:${error}`)
+    user_logger().error('Login failed:', error)
+    console.error(`Login failed:${error}`)
     return errorResp(resp, `${error}`)
   }
 }
@@ -155,21 +155,21 @@ async function login(req, resp) {
 
 /**
  * post /api/user/h5PcLogin
- * @summary 登录
+ * @summary Log in
  * @tags user
- * @description 登录接口
+ * @description Login interface
  * @param {string}  id.query.required  -  id
  * @param {string}  address.query.required  -  address
  * @param {string}  h5PcLogin.query.required  -  h5PcLogin
  * @security - Authorization
  */
 async function h5PcLogin(req, resp) {
-  user_logger().info('PCH5发起登录', req.body)
+  user_logger().info('PCH5 Initiate login', req.body)
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const data = req.body
       if (!(data.wallet && data.wallet_nickName && data.username)) {
-        user_logger().error('登录失败', '数据格式异常')
+        user_logger().error('Login failed', 'Data format exception')
         return errorResp(resp,  400, `validate error`)
       }
       let user = await Model.User.findOne({
@@ -177,12 +177,12 @@ async function h5PcLogin(req, resp) {
           wallet: data.wallet
         }
       })
-      // 找到当前用户，如果存在则返回其数据，如果不存在则新创建
+      // Find the current user; if they exist, return their data; if not, create a new one
       if (!user) {
         const info = await Model.Config.findOne()
         data.user_id = `${new Date().getTime()}`
         data.id = data.user_id
-        // 初始化积分
+        // Initialize points
         data.score = info.invite_normalAccount_score
         data.ticket = info.ticket
        
@@ -199,7 +199,7 @@ async function h5PcLogin(req, resp) {
         await Model.Event.create(event_data)
 
         try {
-          // 给上级用户加积分
+          // Add points to the superior user
           if (data.startParam) {
             let isShareGame = data.startParam.includes('SHAREGAME')
             let inviteId;
@@ -244,7 +244,7 @@ async function h5PcLogin(req, resp) {
                   desc: `${parentUser.username} invite ${data.username} join us!`
                 }
                 await Model.Event.create(event_data)
-                // 顺序不能变
+                // The order cannot be changed
                 if (isShareGame) {
                   increment_score += 50
                 }
@@ -258,7 +258,7 @@ async function h5PcLogin(req, resp) {
           }
         } catch (error) {
           data.startParam = ''
-          user_logger().info('执行找父元素失败', error)
+          user_logger().info('Failed to execute find parent element', error)
         }
         if (data.id) {
           delete data.id
@@ -273,7 +273,7 @@ async function h5PcLogin(req, resp) {
       }
     })
   } catch (error) {
-    user_logger().error('登录失败', error)
+    user_logger().error('Login failed', error)
     console.error(`${error}`)
     return errorResp(resp, 400, `${error}`)
   }
@@ -282,13 +282,13 @@ async function h5PcLogin(req, resp) {
 
 /**
  * post /api/user/update
- * @summary 修改用户信息
+ * @summary Modify user information
  * @tags user
- * @description 修改用户信息
+ * @description Modify user information
  * @security - Authorization
  */
 async function updateInfo(req, resp) {
-  user_logger().info('修改用户信息', req.id)
+  user_logger().info('Modify user information', req.id)
   const tx = await dataBase.sequelize.transaction()
   try {
     await Model.User.update({
@@ -303,7 +303,7 @@ async function updateInfo(req, resp) {
     return successResp(resp, {}, 'success')
   } catch (error) {
     await tx.rollback()
-    user_logger().error('修改用户信息失败', error)
+    user_logger().error('Failed to modify user information', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -311,13 +311,13 @@ async function updateInfo(req, resp) {
 
 /**
  * post /api/user/sign
- * @summary 用户签到
+ * @summary User check-in
  * @tags user
- * @description 用户签到
+ * @description User check-in
  * @security - Authorization
  */
 async function userCheck(req, resp) {
-  user_logger().info('用户签到', req.id)
+  user_logger().info('User check-in', req.id)
   try {
     await dataBase.sequelize.transaction(async (t) => {
       const user = await Model.User.findOne({
@@ -426,7 +426,7 @@ async function userCheck(req, resp) {
     }
     )
   } catch (error) {
-    user_logger().error('用户签到失败', error)
+    user_logger().error('User check-in failed', error)
     console.error(`${error}`)
     return errorResp(resp, 400, `${error}`)
   }
@@ -434,13 +434,13 @@ async function userCheck(req, resp) {
 
 /**
  * post /api/user/bindWallet
- * @summary 用户绑定钱包
+ * @summary User binds wallet
  * @tags user
- * @description 用户绑定钱包
+ * @description User binds wallet
  * @security - Authorization
  */
 async function bindWallet(req, resp) {
-  user_logger().info('用户绑定钱包', req.id)
+  user_logger().info('User binds wallet', req.id)
   const tx = await dataBase.sequelize.transaction()
   try {
     const user = await Model.User.findOne({
@@ -465,7 +465,7 @@ async function bindWallet(req, resp) {
     return successResp(resp, { wallet: req.body.wallet, wallet_nickName: req.body.wallet_nickName }, 'success')
   } catch (error) {
     await tx.rollback()
-    user_logger().error('用户绑定钱包失败', error)
+    user_logger().error('User wallet binding failed', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -473,14 +473,14 @@ async function bindWallet(req, resp) {
 
 /**
  * get /api/user/list
- * @summary 获取用户列表
+ * @summary Get user list
  * @tags user
- * @description 获取用户列表
- * @param {string}  page.query.required  -  分页
+ * @description Get user list
+ * @param {string}  page.query.required  -  Pagination
  * @security - Authorization
  */
 async function getUserList(req, resp) {
-  user_logger().info('获取用户列表', req.id)
+  user_logger().info('Get user list', req.id)
   try {
     const page = req.query.page
     // const total = await dataBase.sequelize.query(`SELECT SUM(score) as total FROM user`, {
@@ -528,7 +528,7 @@ async function getUserList(req, resp) {
     })
     return successResp(resp, { ...list, rank: rank }, 'success')
   } catch (error) {
-    user_logger().error('获取用户列表失败', error)
+    user_logger().error('Failed to retrieve user list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -537,13 +537,13 @@ async function getUserList(req, resp) {
 
 /**
  * get /api/user/subTotal
- * @summary 获取下级总会员
+ * @summary Get total members of the subordinate
  * @tags user
- * @description 获取下级总会员
+ * @description Get total members of the subordinate
  * @security - Authorization
  */
 async function getSubUserTotal(req, resp) {
-  user_logger().info('获取下级总会员', req.id)
+  user_logger().info('Get total members of the subordinate', req.id)
   try {
     const subUser = await Model.User.findAndCountAll({
       where: {
@@ -589,7 +589,7 @@ async function getSubUserTotal(req, resp) {
     
     return successResp(resp, { total: subUser.count, ...parentObj }, 'success')
   } catch (error) {
-    user_logger().error('获取下级总会员失败', error)
+    user_logger().error('Failed to retrieve total members of the subordinate', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -597,14 +597,14 @@ async function getSubUserTotal(req, resp) {
 
 /**
  * get /api/user/subList
- * @summary 获取下级用户列表
+ * @summary Get subordinate user list
  * @tags user
- * @description 获取下级用户列表
- * @param {string}  page.query.required  -  分页
+ * @description Get subordinate user list
+ * @param {string}  page.query.required  -  pagination
  * @security - Authorization
  */
 async function getSubUserList(req, resp) {
-  user_logger().info('获取下级用户列表', req.id)
+  user_logger().info('Get subordinate user list', req.id)
   try {
     const page = req.query.page
     const list = await Model.Event.findAndCountAll({
@@ -624,7 +624,7 @@ async function getSubUserList(req, resp) {
     })
     return successResp(resp, { ...list }, 'success')
   } catch (error) {
-    user_logger().error('获取下级用户列表失败', error)
+    user_logger().error('Failed to retrieve subordinate user list', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -632,14 +632,14 @@ async function getSubUserList(req, resp) {
 
 /**
  * get /api/user/getMyScoreHistory
- * @summary 获取我的积分记录
+ * @summary Get my points record
  * @tags user
- * @description 获取我的积分记录
- * @param {string}  page.query.required  -  分页
+ * @description Get my points record
+ * @param {string}  page.query.required  -  pagination
  * @security - Authorization
  */
 async function getMyScoreHistory(req, resp) {
-  user_logger().info('获取我的积分记录', req.id)
+  user_logger().info('Get my points record.', req.id)
   try {
     const page = req.query.page
     const list = await Model.Event.findAndCountAll({
@@ -670,7 +670,7 @@ async function getMyScoreHistory(req, resp) {
     })
     return successResp(resp, { ...list }, 'success')
   } catch (error) {
-    user_logger().error('获取我的积分记录失败', error)
+    user_logger().error('Failed to retrieve my points record', error)
     console.error(`${error}`)
     return errorResp(resp, `${error}`)
   }
@@ -678,13 +678,13 @@ async function getMyScoreHistory(req, resp) {
 
 /**
  * get /api/user/getInfo
- * @summary 获取用户信息
+ * @summary Get user information
  * @tags user
- * @description 获取用户信息
+ * @description Get user information
  * @security - Authorization
  */
 async function getUserInfo(req, resp) {
-  user_logger().info('获取用户信息', req.id)
+  user_logger().info('Get user information', req.id)
   try {
     const userInfo = await Model.User.findOne({
       where: {
@@ -696,7 +696,7 @@ async function getUserInfo(req, resp) {
     }
     return successResp(resp, userInfo.dataValues, 'success')
   } catch (error) {
-    user_logger().error('获取用户信息失败', error)
+    user_logger().error('Failed to retrieve user information', error)
     console.error(`${error}`)
     return errorResp(resp, 400, `${error}`)
   }
@@ -704,12 +704,12 @@ async function getUserInfo(req, resp) {
 
 /**
  * get /api/user/createUser
- * @summary 生成用户信息
+ * @summary Generate user information
  * @tags user
- * @description 生成用户信息
- * @param {number}  delay.query  -  延时时间，即为每过多长时间生成一条数据（单位ms）
- * @param {score}  score.query  -  分数
- * @param {id}  id.query  -  上级id，用逗号分隔
+ * @description Generate user information
+ * @param {number}  delay.query  -  Delay time, which indicates how often to generate a piece of data (in ms)
+ * @param {score}  score.query  -  Score
+ * @param {id}  id.query  -  Superior IDs, separated by commas
  * @security - Authorization
  */
 let timer = {
@@ -726,14 +726,14 @@ async function createUserInfo(req, resp) {
 
     }
   }, query.delay || 500);
-  return successResp(resp, {}, '执行成功')
+  return successResp(resp, {}, 'Execution successful.')
 }
 
 /**
  * get /api/user/cancelCreateUser
- * @summary 取消生成用户信息
+ * @summary Cancel generating user information
  * @tags user
- * @description 取消生成用户信息
+ * @description Cancel generating user information
  * @security - Authorization
  */
 
@@ -741,26 +741,26 @@ async function cancelCreateUserInfo(req, resp) {
   Object.keys(timer).map(key => {
     clearInterval(timer[key])
   })
-  return successResp(resp, {}, '取消成功')
+  return successResp(resp, {}, 'Cancellation successful')
 }
 
 
 /**
  * get /api/user/getMagicPrize
- * @summary 获取神秘大奖
+ * @summary Get the mystery prize
  * @tags user
- * @description 获取神秘大奖
+ * @description Get the mystery prize
  * @security - Authorization
  */
 
 async function getMagicPrize(req, resp) {
-  user_logger().info('获取神秘大奖', req.id)
+  user_logger().info('Get the mystery prize', req.id)
   try {
     await dataBase.sequelizeAuto.transaction(async (t) => {
       const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0); // 设置今天的开始时间
+      todayStart.setHours(0, 0, 0, 0); // Set today's start time
       const todayEnd = new Date(todayStart);
-      todayEnd.setDate(todayEnd.getDate() + 1); // 设置今天的结束时间
+      todayEnd.setDate(todayEnd.getDate() + 1); // Set today's end time
       const isEvent = await Model.Event.findOne({
         where: {
           from_user: req.id,
@@ -797,16 +797,16 @@ async function getMagicPrize(req, resp) {
       }
     })
   } catch (error) {
-    user_logger().info('获取神秘大奖失败', `${error}`)
+    user_logger().info('Failed to get the mystery prize', `${error}`)
     return errorResp(resp, 400, `${error}`)
   }
 }
 
 /**
  * get /api/user/resetTicket
- * @summary 重置每日次数
+ * @summary Reset daily count
  * @tags user
- * @description 重置每日次数
+ * @description Reset daily count
  * @security - Authorization
  */
 
@@ -818,7 +818,7 @@ async function resetTicketInfo(req, resp) {
       }, {
         where: {}
       })
-      return successResp(resp, {}, '重置成功')
+      return successResp(resp, {}, 'Reset successful')
     })
   } catch (error) {
     return errorResp(resp, 400, `${error}`)
@@ -827,9 +827,9 @@ async function resetTicketInfo(req, resp) {
 
 /**
  * get /api/user/startFarming
- * @summary 开始种植
+ * @summary Start planting
  * @tags user
- * @description 开始种植
+ * @description Start planting
  * @security - Authorization
  */
 
@@ -845,9 +845,9 @@ async function startFarming(req, resp) {
       if (!user) {
         return errorResp(resp, 403, `not found`)
       }
-      // 如果当前时间还在结束时间范围内，不允许再次开始
+      // If the current time is still within the end time range, restarting is not allowed
       if (user && user.dataValues.end_farm_time && new Date(user.dataValues.end_farm_time).getTime() > Date.now()) {
-        return errorResp(resp, 400, 'farming还未结束')
+        return errorResp(resp, 400, 'Farming has not yet ended')
       }
       const last_farming_time = new Date()
       const end_farm_time = new Date(last_farming_time.getTime() + 3 * 60 * 60 * 1000)
@@ -875,10 +875,10 @@ async function startFarming(req, resp) {
       return successResp(resp, {
         end_farm_time: end_farm_time,
         last_farming_time: last_farming_time
-      }, '开始farming')
+      }, 'Start farming')
     })
   } catch (error) {
-    user_logger().error('开始种植失败', error)
+    user_logger().error('Failed to start planting', error)
     return errorResp(resp, 400, `${error}`)
   }
 }
@@ -888,9 +888,9 @@ async function startFarming(req, resp) {
 
 /**
  * get /api/user/getRewardFarming
- * @summary 收货果实
+ * @summary Harvest the fruit
  * @tags user
- * @description 收货果实
+ * @description Harvest the fruit
  * @security - Authorization
  */
 
@@ -910,7 +910,7 @@ async function getRewardFarming(req, resp) {
       const last_farming_time = user.dataValues.last_farming_time || now
       const end_farm_time = user.dataValues.end_farm_time
       if (new Date(last_farming_time).getTime() > new Date(end_farm_time).getTime()) {
-        return errorResp(resp, 400, '还没开始farming')
+        return errorResp(resp, 400, 'Farming has not started yet')
       }
       let score = 0.1 * Math.floor(((Math.min(now.getTime(), new Date(end_farm_time).getTime()) - new Date(last_farming_time).getTime())) / 1000)
       score = score.toFixed(1) * 1
@@ -926,7 +926,7 @@ async function getRewardFarming(req, resp) {
           }
         }
       )
-      // 如果本次farming结束则执行给上级返
+      // If this farming session ends, execute the return to the superior
       if (user.startParam && now.getTime() > new Date(end_farm_time).getTime()) {
         const parentUser = await Model.User.findOne({
           where: {
@@ -953,7 +953,7 @@ async function getRewardFarming(req, resp) {
           await Model.Event.create(event_data)
         }
       }
-      // 记录收获
+      // Record the harvest
       if (now.getTime() > new Date(end_farm_time).getTime()) {
         event_data = {
           type: 'harvest_farming',
@@ -973,10 +973,10 @@ async function getRewardFarming(req, resp) {
         farm_score: user.farm_score + score,
         last_farming_time: now,
         farm_reward_score: score
-      }, 'farming收获')
+      }, 'Farming harvest')
     })
   } catch (error) {
-    user_logger().error('收货果实失败', error)
+    user_logger().error('Failed to receive the fruit', error)
     return errorResp(resp, 400, `${error}`)
   }
 }
@@ -991,15 +991,15 @@ async function resetTicketInfoInner() {
       }, {
         where: {}
       })
-      user_logger().log(`重置成功`)
+      user_logger().log(`Reset successful`)
     })
   } catch (error) {
-    user_logger.error(`重置失败：${error}`)
+    user_logger.error(`Reset failed：${error}`)
   }
 }
-// 每天的上午08:00执行任务，指定时区为Asia/Chongqing
+// Execute the task every day at 08:00 AM, specified timezone Asia/Chongqing
 cron.schedule('0 8 * * *', () => {
-  user_logger().log(`开始重置Ticket`)
+  user_logger().log(`Start resetting the Ticket`)
   resetTicketInfoInner()
 }, {
   scheduled: true,
@@ -1055,14 +1055,14 @@ async function autoCreateUser(query) {
       }
 
       await Model.Event.create(event)
-      user_logger().info('创建虚拟用户成功：', data)
+      user_logger().info('Virtual user created successfully：', data)
     })
   } catch (error) {
-    user_logger().error('创建虚拟用户失败：', error)
+    user_logger().error('Failed to create virtual user：', error)
   }
 }
 
-// 配置日志输出
+// Configure log output
 function user_logger() {
   log4js.configure({
     appenders: {

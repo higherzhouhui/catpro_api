@@ -1,7 +1,7 @@
 const { successResp, errorResp } = require('./common')
 const { CheckInReward } = require('./models')
 
-// 配置日志输出
+// Configure log output
 var log4js = require('log4js')
 
 function checkInReward_logger() {
@@ -25,14 +25,14 @@ function checkInReward_logger() {
 
 /**
  * post /api/checkInReward/list
- * @summary 签到奖励列表
+ * @summary Check-in reward list
  * @tags checkInReward
- * @description 奖励列表接口
+ * @description Reward list interface
  * @security - Authorization
  */
 async function list(req, resp) {
   try {
-    checkInReward_logger().info(`用户:${req.username}要获取道具列表`)
+    checkInReward_logger().info(`User:${req.username}Need to retrieve the item list`)
     const list = await CheckInReward.findAll({
       order: [['day', 'asc']],
     })

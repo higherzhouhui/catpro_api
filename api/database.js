@@ -19,12 +19,12 @@ cache.on('connect', () => {
   logger.info('2.Redis connection has establish successfully')
 })
 
-// 连接错误的回调函数
+// Callback function for connection error
 cache.on('error', (err) => {
   logger.error('Redis error:', err)
 })
 
-// 配置数据库连接
+// Configure database connection
 const sequelize = new Sequelize(
   config.DB_NAME,
   config.DB_USER,
@@ -48,7 +48,7 @@ const sequelize = new Sequelize(
   }
 )
 
-// 配置数据库连接
+// Configure database connection
 const sequelizeAuto = new Sequelize(
   config.DB_NAME,
   config.DB_USER,
@@ -74,14 +74,14 @@ const sequelizeAuto = new Sequelize(
 
 
 
-// 测试连接
+// Test connection
 async function connectDB() {
   try {
     await sequelize.authenticate()
     logger.info('3.Mysql connection has establish successfully!')
-    // 初始化
+    // Initialize
     if (process.env.INIT == 1) {
-      await sequelize.sync({ force: true }); // 删除并重新创建所有表
+      await sequelize.sync({ force: true }); // Delete and recreate all tables
       logger.log('4.waiting...');
       const admin = require('./admin.js')
       const result = await admin.init_baseData()
@@ -91,8 +91,8 @@ async function connectDB() {
         process.exit(0)
       }, 2000);
     } else {
-      // await sequelize.sync({ force: false }); // 将 force 设置为 true 将会删除并重新创建所有表
-      await sequelize.sync({ alter: true }); // 将 force 设置为 true 将会删除并重新创建所有表
+      // await sequelize.sync({ force: false }); // Setting `force` to true will delete and recreate all tables
+      await sequelize.sync({ alter: true }); // Setting `force` to true will delete and recreate all tables
       logger.log('4.Database synchronization successful!');
       logger.log('5.Server started successful!');
     }

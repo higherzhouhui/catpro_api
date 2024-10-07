@@ -48,7 +48,7 @@ async function init_taskList() {
 }
 
 //----------------------------- private method --------------
-// 配置日志输出
+// Configure log output
 function admin_logger() {
   log4js.configure({
     appenders: {

@@ -21,25 +21,25 @@ function generateOrderNumber(uid) {
   const minutes = String(currentDate.getMinutes()).padStart(2, '0')
   const seconds = String(currentDate.getSeconds()).padStart(2, '0')
 
-  // 将uid转为字符串，确保长度为7，不足时前面补0
+  // Convert UID to a string, ensuring the length is 7, and prepend zeros if it's shorter
   const formattedUid = String(uid).padStart(8, '0')
 
-  const randomSuffix = Math.floor(Math.random() * 1000000) // 生成3位随机数
+  const randomSuffix = Math.floor(Math.random() * 1000000) // Generate a 3-digit random number
 
   const orderNumber = `${year}${month}${day}${hours}${minutes}${seconds}${formattedUid}${randomSuffix}`
   return orderNumber
 }
 
 function timestampToTime(timestamp) {
-  const date = new Date(timestamp * 1000) // 创建 Date 对象，使用时间戳作为参数
-  const year = date.getFullYear() // 获取年份
-  const month = date.getMonth() + 1 // 获取月份（注意：月份从0开始，所以需要加1）
-  const day = date.getDate() // 获取日期
-  const hours = date.getHours() // 获取小时
-  const minutes = date.getMinutes() // 获取分钟
-  const seconds = date.getSeconds() // 获取秒数
+  const date = new Date(timestamp * 1000) // Create a Date object using the timestamp as a parameter
+  const year = date.getFullYear() // Get the year
+  const month = date.getMonth() + 1 // Get the month (note: months start from 0, so add 1)
+  const day = date.getDate() // Get the date
+  const hours = date.getHours() // Get the hour
+  const minutes = date.getMinutes() // Get the minute
+  const seconds = date.getSeconds() // Get the seconds
 
-  // 格式化输出
+  // Format the output
   const formattedDate = `${year}-${pad(month)}-${pad(day)}`
   const formattedTime = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 
@@ -51,20 +51,20 @@ function pad(num) {
 }
 
 /**
- * 计算攻击的胜负手
+ * Calculate the winning move of the attack
  * @param {*} playerA
  * @param {*} coefA
  * @param {*} palyerB
  * @param {*} coefB
- * @returns (赢家，输家)对象
+ * @returns (Winner, Loser) object
  */
 
-// 目前控制攻击者胜率好友60% 比对方等级高70%;比对方等级低50%;同等级65%
+// Currently, control the attacker’s win rate: 60% against friends; 70% higher than the opponent's level; 50% lower than the opponent's level; 65% at the same level.
 async function calculateWinner(playerA, playerB) {
-  // 攻击者增加10%的胜率
+  // Attacker's win rate increases by 10%
   const systemConfig = await Config.findByPk(1)
   let ratio = 0
-  // 首先确定关系
+  // First, establish the relationship
   if (playerA.invite_id == playerB.id || playerA.id == playerB.invite_id) {
     ratio = systemConfig.bonk_friend_rate
   } else if (playerA.pts > playerB.pts * 5 || playerA.pts - playerB.pts > 200) {
@@ -94,27 +94,27 @@ async function calculateWinner(playerA, playerB) {
 // }, 5000);
 
 /**
- * 抽奖程序
- * @returns 奖品对象
+ * Lottery program.
+ * @returns Prize object
  */
 async function raffle_prizes() {
   const prizes = await Prize.findAll({
     where: { visible: 1 }
   })
 
-  // 计算总体中奖概率
+  // Calculate the overall winning probability
   const totalProbability = prizes.reduce((acc, prize) => acc + prize.weight, 0)
-  const randomValue = Math.random() * totalProbability // 生成一个0到总概率之间的随机数
+  const randomValue = Math.random() * totalProbability // Generate a random number between 0 and the total probability
   let cumulativeProbability = 0
 
   for (const prize of prizes) {
-    cumulativeProbability += prize.weight // 累计奖品的中奖概率
+    cumulativeProbability += prize.weight // Cumulative winning probability of the prizes
     if (randomValue <= cumulativeProbability) {
-      return prize // 返回中奖的奖品名称
+      return prize // Return the name of the winning prize
     }
   }
 
-  return prizes[0] // 如果未中奖，则返回相应提示
+  return prizes[0] // If not won, return the corresponding message
 }
 
 function get_current_time() {
@@ -122,45 +122,45 @@ function get_current_time() {
 }
 
 /**
- * 计算两数的百分比
+ * Calculate the percentage of two numbers
  * @param {*} dividend
  * @param {*} divisor
  * @returns
  */
 function divideAndFormatWithPercentage(dividend, divisor) {
-  // 确保除数不为零，避免除零错误
+  // Ensure the divisor is not zero to avoid division by zero errors
   if (divisor === 0) {
-    throw new Error('除数不能为零')
+    throw new Error('The divisor cannot be zero')
   }
 
-  // 计算结果
+  // Calculate the result
   const result = (dividend / divisor) * 100
 
-  // 保留两位小数并加上百分号
+  // Keep two decimal places and add a percentage sign
   const formattedResult = result.toFixed(2) + '%'
 
   return formattedResult
 }
 
 function format_current_time() {
-  // 获取当前时间
+  // Get the current time
   const currentDate = new Date()
 
-  // 获取月份、日期、小时和分钟，并进行格式化
-  const month = currentDate.getMonth() + 1 // 月份从 0 开始，所以要加 1
+  // Get the month, date, hour, and minute, and format them
+  const month = currentDate.getMonth() + 1 // Months start from 0, so add 1
   const day = currentDate.getDate()
   const hours = currentDate.getHours()
   const minutes = currentDate.getMinutes()
 
-  // 格式化时间
+  // Format the time
   const formattedTime = `${month}/${day} ${padZero(hours)}:${padZero(minutes)}`
 
-  // 输出格式化后的时间
+  // Output the formatted time
   console.log(`Formatted current time: ${formattedTime}`)
   return formattedTime
 }
 
-// 补零函数
+// Zero-padding function
 function padZero(num) {
   return num.toString().padStart(2, '0')
 }
@@ -253,8 +253,8 @@ function expToNftImg(lastName, exp, expList, tokenId) {
 }
 
 function verify_wallet(wallet) {
-  // 校验前缀，长度、16进制
-  // 正则表达式用于匹配以太坊钱包地址格式
+  // Validate prefix, length, and hexadecimal format
+  // Regular expression to match Ethereum wallet address format
   const addressRegex = /^0x[a-fA-F0-9]{40}$/
   const isValidAddress = addressRegex.test(wallet)
   return isValidAddress
@@ -275,17 +275,17 @@ function formatNumTen(money, length = 5) {
 }
 
 function uid_code(uid) {
-  const base34Chars = '123456789ABCDEFGHKMNPQRSTVWXYZ' // 34 进制的字符集
+  const base34Chars = '123456789ABCDEFGHKMNPQRSTVWXYZ' // Base 34 character set
   let result = ''
   const length = base34Chars.length
-  // 将 UID 转换为 34 进制
+  // Convert UID to base 34
   while (uid > 0) {
     const remainder = uid % length
     result = base34Chars[remainder] + result
     uid = Math.floor(uid / length)
   }
 
-  // 如果结果不够 6 位，则在开头添加零字符
+  // If the result is less than 6 digits, prepend zero characters
   while (result.length < 6) {
     result = '0' + result
   }
@@ -293,7 +293,7 @@ function uid_code(uid) {
   return result
 }
 
-/** 根据usdt 计算ffp的数量 */
+/** Calculate the quantity of FFP based on USDT */
 async function usdt_ffp(usdt) {
   try {
     const systemConfig = await Config.findByPk(1)
@@ -364,13 +364,13 @@ function isLastDay(timestamp, diff) {
   date.setDate(date.getDate() - diff)
   date.setHours(0,0,0,0)
   const startTimeStamp = date.getTime()
-  const endTimeStamp = startTimeStamp + 24 * 60 * 60 * 1000; // 24小时的毫秒数
-  // 判断给定的时间戳是否在时间范围内
+  const endTimeStamp = startTimeStamp + 24 * 60 * 60 * 1000; // Milliseconds in 24 hours
+  // Check if the given timestamp is within the time range
   return timestamp >= startTimeStamp && timestamp < endTimeStamp;
 }
 
 
-// 配置日志输出
+// Configure log output
 function logger_self(type) {
   log4js.configure({
     appenders: {

@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize')
 const db = require('./database')
-/** 用户表 */
+/** User table */
 const User = db.sequelize.define(
   'User',
   {
@@ -51,7 +51,7 @@ const User = db.sequelize.define(
 // User.sync({ alter: true })
 
 
-/** 签到奖励列表  */
+/** Check-in reward list  */
 const CheckInReward = db.sequelize.define(
   'checkInReward',
   {
@@ -67,7 +67,7 @@ const CheckInReward = db.sequelize.define(
 // CheckInReward.sync({ alter: true })
 
 
-/** 任务列表  */
+/** Task list  */
 const TaskList = db.sequelize.define(
   'taskList',
   {
@@ -85,7 +85,7 @@ const TaskList = db.sequelize.define(
 
 // TaskList.sync({ alter: true })
 
-/** 全局配置  */
+/** Global configuration */
 const Config = db.sequelize.define(
   'Config',
   {
@@ -105,7 +105,7 @@ const Config = db.sequelize.define(
   }
 )
 // Config.sync({ alter: true })
-/** 操作日志  */
+/** Operation log  */
 const Event = db.sequelize.define(
   'Event',
   {
