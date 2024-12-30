@@ -148,7 +148,7 @@ async function login(req, resp) {
   } catch (error) {
     user_logger().error('Login failed:', error)
     console.error(`Login failed:${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -187,7 +187,7 @@ async function h5PcLogin(req, resp) {
         data.ticket = info.ticket
        
         const event_data = {
-          type: 'register',
+          type: 'Register',
           from_user: data.id,
           to_user: data.id,
           score: data.score,
@@ -305,7 +305,7 @@ async function updateInfo(req, resp) {
     await tx.rollback()
     user_logger().error('Failed to modify user information', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -467,7 +467,7 @@ async function bindWallet(req, resp) {
     await tx.rollback()
     user_logger().error('User wallet binding failed', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -530,7 +530,7 @@ async function getUserList(req, resp) {
   } catch (error) {
     user_logger().error('Failed to retrieve user list', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -591,7 +591,7 @@ async function getSubUserTotal(req, resp) {
   } catch (error) {
     user_logger().error('Failed to retrieve total members of the subordinate', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -626,7 +626,7 @@ async function getSubUserList(req, resp) {
   } catch (error) {
     user_logger().error('Failed to retrieve subordinate user list', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
@@ -672,7 +672,7 @@ async function getMyScoreHistory(req, resp) {
   } catch (error) {
     user_logger().error('Failed to retrieve my points record', error)
     console.error(`${error}`)
-    return errorResp(resp, `${error}`)
+    return errorResp(resp, 400, `${error}`)
   }
 }
 
